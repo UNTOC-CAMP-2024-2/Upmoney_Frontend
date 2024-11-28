@@ -20,15 +20,16 @@ class _NavigationState extends State<Navigation> {
     return Scaffold(
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
-          backgroundColor: Color(0xFF081F5C),        
+          backgroundColor: const Color(0xFF081F5C),
           labelTextStyle: WidgetStateProperty.all(
-            TextStyle(color: Colors.white),           
+            const TextStyle(color: Colors.white),
           ),
           iconTheme: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return IconThemeData(color: const Color.fromARGB(255, 46, 43, 43)); 
+              return const IconThemeData(
+                  color: Color.fromARGB(255, 46, 43, 43));
             }
-            return IconThemeData(color: Colors.white);   
+            return const IconThemeData(color: Colors.white);
           }),
         ),
         child: NavigationBar(
@@ -37,13 +38,13 @@ class _NavigationState extends State<Navigation> {
             if (value == 2) {
               showDialog(
                 context: context,
-                builder: (context) => CustomDialog(),
+                builder: (context) => const CustomDialog(),
               );
             } else {
               selectIndex = value;
             }
           }),
-          destinations: [
+          destinations: const [
             NavigationDestination(
               icon: Icon(Icons.attach_money_rounded, size: 30),
               label: "",
@@ -68,12 +69,12 @@ class _NavigationState extends State<Navigation> {
         ),
       ),
       appBar: AppBar(
-        title: Text("UpMoney"),
+        title: const Text("UpMoney"),
       ),
       body: Center(
         child: IndexedStack(
           index: selectIndex,
-          children: [
+          children: const [
             PayPage(),
             HouseholdPage(),
             PayPage(),
@@ -86,10 +87,8 @@ class _NavigationState extends State<Navigation> {
   }
 }
 
-
-
 class CustomDialog extends StatefulWidget {
-  const CustomDialog({Key? key}) : super(key: key);
+  const CustomDialog({super.key});
 
   @override
   State<CustomDialog> createState() => _CustomDialogState();
@@ -115,152 +114,152 @@ class _CustomDialogState extends State<CustomDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Container(
+      child: SizedBox(
         width: 300,
         height: 350,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Align(
-          alignment: AlignmentDirectional(-1, -1),
-          child: Stack(
-            children: [
-              Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(15, 10, 0, 0),
-                child: Text(
-                  '소비 / 소득 입력',
-                  style: TextStyle(
-                    fontFamily: 'Inter Tight',
-                    fontSize: 30,
-                    letterSpacing: 0.0,
-                    fontWeight: FontWeight.bold,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Align(
+            alignment: const AlignmentDirectional(-1, -1),
+            child: Stack(
+              children: [
+                const Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(15, 10, 0, 0),
+                  child: Text(
+                    '소비 / 소득 입력',
+                    style: TextStyle(
+                      fontFamily: 'Inter Tight',
+                      fontSize: 30,
+                      letterSpacing: 0.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              Align(
-                alignment: AlignmentDirectional(-0.19, -0.43),
-                child: Container(
-                  width: 275,
-                  height: 55,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF001A72),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: AlignmentDirectional(-0.45, 0),
-                        child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(10, 10, 40, 10),
-                          child: Container(
-                            width: 200,
-                            child: TextFormField(
-                              controller: _textController,
-                              focusNode: _textFieldFocusNode,
-                              autofocus: false,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                isDense: true,
-                                hintText: '금액 입력',
-                                hintStyle: TextStyle(
-                                  color: Colors.white
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color(0xFF001A72),
-                                    width: 1,
+                Align(
+                  alignment: const AlignmentDirectional(-0.19, -0.43),
+                  child: Container(
+                    width: 275,
+                    height: 55,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF001A72),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: const AlignmentDirectional(-0.45, 0),
+                          child: Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                10, 10, 40, 10),
+                            child: SizedBox(
+                              width: 200,
+                              child: TextFormField(
+                                controller: _textController,
+                                focusNode: _textFieldFocusNode,
+                                autofocus: false,
+                                obscureText: false,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  hintText: '금액 입력',
+                                  hintStyle:
+                                      const TextStyle(color: Colors.white),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFF001A72),
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color(0x00000000),
-                                    width: 1,
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Color(0x00000000),
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  borderRadius: BorderRadius.circular(8),
+                                  filled: true,
+                                  fillColor: const Color(0xFF001A72),
                                 ),
-                                filled: true,
-                                fillColor: Color(0xFF001A72),
+                                style: const TextStyle(
+                                  fontFamily: 'Inter',
+                                  color: Colors.white,
+                                  letterSpacing: 0.0,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                                cursorColor: Colors.white,
                               ),
+                            ),
+                          ),
+                        ),
+                        const Align(
+                          alignment: AlignmentDirectional(0.85, -0.24),
+                          child: Padding(
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(10, 5, 5, 5),
+                            child: Text(
+                              '원',
                               style: TextStyle(
-                                fontFamily: 'Inter',
+                                fontSize: 20,
+                                fontFamily: 'Inter Tight',
                                 color: Colors.white,
                                 letterSpacing: 0.0,
-                                fontWeight: FontWeight.normal,
                               ),
-                              cursorColor: Colors.white,
                             ),
                           ),
                         ),
-                      ),
-                      Align(
-                        alignment: AlignmentDirectional(0.85, -0.24),
-                        child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(10, 5, 5, 5),
-                          child: Text(
-                            '원',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontFamily: 'Inter Tight',
-                              color: Colors.white,
-                              letterSpacing: 0.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              _buildCheckboxWithText(-0.86, 0.08, checkboxValue1, '식비',
-                  (newValue) {
-                setState(() => checkboxValue1 = newValue!);
-              }),
-              _buildCheckboxWithText(-0.86, 0.45, checkboxValue2, '교육',
-                  (newValue) {
-                setState(() => checkboxValue2 = newValue!);
-              }),
-              _buildCheckboxWithText(-0.86, 0.78, checkboxValue3, '저축',
-                  (newValue) {
-                setState(() => checkboxValue3 = newValue!);
-              }),
-              _buildCheckboxWithText(0.03, 0.08, checkboxValue4, '취미',
-                  (newValue) {
-                setState(() => checkboxValue4 = newValue!);
-              }),
-              _buildCheckboxWithText(0.03, 0.45, checkboxValue5, '교통',
-                  (newValue) {
-                setState(() => checkboxValue5 = newValue!);
-              }),
-            ],
+                _buildCheckboxWithText(-0.86, 0.08, checkboxValue1, '식비',
+                    (newValue) {
+                  setState(() => checkboxValue1 = newValue!);
+                }),
+                _buildCheckboxWithText(-0.86, 0.45, checkboxValue2, '교육',
+                    (newValue) {
+                  setState(() => checkboxValue2 = newValue!);
+                }),
+                _buildCheckboxWithText(-0.86, 0.78, checkboxValue3, '저축',
+                    (newValue) {
+                  setState(() => checkboxValue3 = newValue!);
+                }),
+                _buildCheckboxWithText(0.03, 0.08, checkboxValue4, '취미',
+                    (newValue) {
+                  setState(() => checkboxValue4 = newValue!);
+                }),
+                _buildCheckboxWithText(0.03, 0.45, checkboxValue5, '교통',
+                    (newValue) {
+                  setState(() => checkboxValue5 = newValue!);
+                }),
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }
 
-  Widget _buildCheckboxWithText(
-      double x, double y, bool value, String label, ValueChanged<bool?> onChanged) {
+  Widget _buildCheckboxWithText(double x, double y, bool value, String label,
+      ValueChanged<bool?> onChanged) {
     return Align(
       alignment: AlignmentDirectional(x, y),
-      
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Checkbox(
             value: value,
             onChanged: onChanged,
-            side: BorderSide(width: 2, color: Colors.grey),
+            side: const BorderSide(width: 2, color: Colors.grey),
             activeColor: Colors.blue,
             checkColor: Colors.white,
           ),
           Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
+            padding: const EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
             child: Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Inter',
                 letterSpacing: 0.0,
               ),
@@ -270,5 +269,5 @@ class _CustomDialogState extends State<CustomDialog> {
       ),
     );
   }
-}
+}// ddddkdkd
 
