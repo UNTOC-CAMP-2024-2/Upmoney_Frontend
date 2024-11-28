@@ -9,7 +9,7 @@ class HouseholdPage extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            const Text("hi!")
+            const Text("he!")
           ],
         ),
       ),
