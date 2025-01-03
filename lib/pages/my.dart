@@ -18,7 +18,7 @@ class MyPage extends StatelessWidget {
               children: [
                 const Icon(
                   Icons.account_circle,
-                  size: 100,
+                  size: 130,
                   color: Colors.grey,
                 ),
                 const SizedBox(width: 16),
@@ -29,7 +29,7 @@ class MyPage extends StatelessWidget {
                     Text(
                       "반갑습니다!",
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 24,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -37,7 +37,7 @@ class MyPage extends StatelessWidget {
                     Text(
                       "사용자 이름 님",
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -45,7 +45,7 @@ class MyPage extends StatelessWidget {
                     Text(
                       "아이디 | 비밀번호 확인",
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 20,
                         color: Colors.grey,
                       ),
                     ),
@@ -54,17 +54,18 @@ class MyPage extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 16), // Section 1과 Section 2 사이 간격
+          const SizedBox(height: 15), // Section 1과 Section 2 사이 간격
 
-          // Section 2: 해바라기 이미지와 메시지
+          // Section 2: 금전운운
           Container(
             width: double.infinity, 
-            height: 200, 
+            height: 320, 
             decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/.png'), 
-                fit: BoxFit.cover, 
-              ),
+              color:Colors.yellow,
+              // image: DecorationImage(
+              //   image: AssetImage('assets/images/.png'), 
+              //   fit: BoxFit.cover, 
+              // ),
             ),
           ),
         ],
