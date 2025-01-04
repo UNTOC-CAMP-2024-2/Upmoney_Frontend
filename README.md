@@ -15,5 +15,12 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-팀원: 장호빈
+팀장: 장호빈
 
+팀원: 김기태
+
+팀원: 김유진
+
+팀원: 박은성
+
+팀원: 하업준
