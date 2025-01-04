@@ -7,7 +7,7 @@ class MyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.start, // 위에서부터 아래로 배치
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Section 1: 사용자 정보
           Padding(
@@ -35,7 +35,7 @@ class MyPage extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      "사용자 이름 님",
+                      "사용자 이름 님", // * 변수로 수정해야함
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
@@ -56,7 +56,7 @@ class MyPage extends StatelessWidget {
           ),
           const SizedBox(height: 15), // Section 1과 Section 2 사이 간격
 
-          // Section 2: 금전운운
+          // Section 2: 금전운
           Container(
             width: double.infinity, 
             height: 320, 
@@ -68,7 +68,57 @@ class MyPage extends StatelessWidget {
               // ),
             ),
           ),
+          // Section 3: 공지사항 등...
+          Expanded(
+            child: ListView(
+              children: [
+                _buildListTile(context, "금전운 안내서", GuidePage(title: "금전운 안내서")),
+                _buildListTile(context, "공지사항", GuidePage(title: "공지사항")),
+                _buildListTile(context, "앱 사용방법", GuidePage(title: "앱 사용방법")),
+              ],
+            ),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildListTile(BuildContext context, String title, Widget nextpage){
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.w500,
+        ),
+        ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => nextpage),
+            );
+        },
+    );
+  }
+}
+
+class GuidePage extends StatelessWidget {
+  final String title; 
+  const GuidePage({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: Center(
+        child: Text(
+          "여기는 $title 페이지입니다.",
+          style: const TextStyle(fontSize: 20),
+        ),
       ),
     );
   }
