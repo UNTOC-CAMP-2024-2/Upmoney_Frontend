@@ -126,7 +126,7 @@ class GuidePage extends StatelessWidget {
               ),
             ),
           ),
-          centerTitle: true, 
+          centerTitle: false, 
         ),
       ),
       body: Padding(
@@ -164,11 +164,11 @@ class GuidePage extends StatelessWidget {
       case "금전운 안내서":
         return "🍀금전운 안내서🍀";
       case "공지사항":
-        return "2025-01-05: 공지사항";
+        return " 2025-01-05: 공지사항 ";
       case "앱 사용방법":
-        return "Upmoney 사용방법";
+        return " Upmoney 사용방법 ";
       default:
-        return "알 수 없는 페이지";
+        return " 알 수 없는 페이지 ";
     }
   }
 
