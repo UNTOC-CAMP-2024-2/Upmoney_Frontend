@@ -145,8 +145,8 @@ class GuidePage extends StatelessWidget {
               Text(
                 _getContentForPage(title), // 각 페이지에 맞는 내용 가져오기
                 style: const TextStyle(
-                  fontSize: 18,
-                  height: 1.5, 
+                  fontSize: 22,
+                  height: 2, 
                 ),
               ),
             ],
@@ -163,7 +163,8 @@ class GuidePage extends StatelessWidget {
         return "금전운을 높이기 위한 팁과 방법:\n"
             "- 소비 습관 점검하기\n"
             "- 저축 계획 세우기\n"
-            "- 지출 항목 분석과 최적화";
+            "- 지출 항목 분석과 최적화\n"
+            "- 장학금 정보를 통한한 재정 생활 구체화";
       case "공지사항":
         return "여기에는 최신 공지사항이 표시됩니다:\n"
             "- 서비스 점검: 2025년 01월 05일\n";
