@@ -114,10 +114,10 @@ class GuidePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100), 
+        preferredSize: const Size.fromHeight(100),
         child: AppBar(
           title: Padding(
-            padding: const EdgeInsets.only(top: 16.0), // 글자를 아래로 내리는 여백 추가
+            padding: const EdgeInsets.only(top: 16.0), // AppBar 제목 위치 조정
             child: Text(
               title,
               style: const TextStyle(
@@ -126,27 +126,30 @@ class GuidePage extends StatelessWidget {
               ),
             ),
           ),
+          centerTitle: true, 
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0), 
+        padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // 본문 큰 글씨
               Text(
-                title, 
+                _getHeadingForPage(title), 
                 style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 16),
+              // 본문 내용
               Text(
-                _getContentForPage(title), // 각 페이지에 맞는 내용 가져오기
+                _getContentForPage(title),
                 style: const TextStyle(
                   fontSize: 22,
-                  height: 2, 
+                  height: 2,
                 ),
               ),
             ],
@@ -156,7 +159,20 @@ class GuidePage extends StatelessWidget {
     );
   }
 
-  // 페이지 내용 반환
+  String _getHeadingForPage(String title) {
+    switch (title) {
+      case "금전운 안내서":
+        return "🍀금전운 안내서🍀";
+      case "공지사항":
+        return "2025-01-05: 공지사항";
+      case "앱 사용방법":
+        return "Upmoney 사용방법";
+      default:
+        return "알 수 없는 페이지";
+    }
+  }
+
+  // 본문 내용 반환
   String _getContentForPage(String title) {
     switch (title) {
       case "금전운 안내서":
