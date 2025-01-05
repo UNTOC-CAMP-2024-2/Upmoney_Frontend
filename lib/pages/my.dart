@@ -104,6 +104,8 @@ class MyPage extends StatelessWidget {
   }
 }
 
+
+// 공지사항 새 페이지
 class GuidePage extends StatelessWidget {
   final String title; 
   const GuidePage({super.key, required this.title});
@@ -111,15 +113,65 @@ class GuidePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(100), 
+        child: AppBar(
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 25, 
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ),
-      body: Center(
-        child: Text(
-          "여기는 $title 페이지입니다.",
-          style: const TextStyle(fontSize: 20),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0), 
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title, 
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                _getContentForPage(title), // 각 페이지에 맞는 내용 가져오기
+                style: const TextStyle(
+                  fontSize: 18,
+                  height: 1.5, 
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  // 페이지 내용 반환
+  String _getContentForPage(String title) {
+    switch (title) {
+      case "금전운 안내서":
+        return "금전운을 높이기 위한 팁과 방법:\n"
+            "- 소비 습관 점검하기\n"
+            "- 저축 계획 세우기\n"
+            "- 지출 항목 분석과 최적화";
+      case "공지사항":
+        return "여기에는 최신 공지사항이 표시됩니다:\n"
+            "- 서비스 점검: 2023년 10월 1일\n"
+            "- 새 기능 추가: 예산 목표 설정";
+      case "앱 사용방법":
+        return "앱 사용방법 가이드:\n"
+            "1. 회원가입 또는 로그인.\n"
+            "2. 예산을 입력하여 관리 시작.\n"
+            "3. 월별 리포트를 확인하고 목표 설정.";
+      default:
+        return "해당 페이지의 내용이 준비되지 않았습니다.";
+    }
   }
 }
