@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'navigation.dart';
+import 'pages/login.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // 1초 후 로그인 페이지로 이동
     Future.delayed(const Duration(seconds: 1), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const Navigation()),
+        MaterialPageRoute(builder: (context) => const LoginPage()),
       );
     });
 
