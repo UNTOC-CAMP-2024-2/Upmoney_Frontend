@@ -116,11 +116,14 @@ class GuidePage extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100), 
         child: AppBar(
-          title: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 25, 
-              fontWeight: FontWeight.bold,
+          title: Padding(
+            padding: const EdgeInsets.only(top: 16.0), // 글자를 아래로 내리는 여백 추가
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
@@ -163,13 +166,12 @@ class GuidePage extends StatelessWidget {
             "- 지출 항목 분석과 최적화";
       case "공지사항":
         return "여기에는 최신 공지사항이 표시됩니다:\n"
-            "- 서비스 점검: 2023년 10월 1일\n"
-            "- 새 기능 추가: 예산 목표 설정";
+            "- 서비스 점검: 2025년 01월 05일\n";
       case "앱 사용방법":
         return "앱 사용방법 가이드:\n"
             "1. 회원가입 또는 로그인.\n"
-            "2. 예산을 입력하여 관리 시작.\n"
-            "3. 월별 리포트를 확인하고 목표 설정.";
+            "2. 계좌연결 후 분석된 자신의 소비 습관 확인.\n"
+            "3. Upmoney앱을 통해 올바른 소비 습관을 형성합시다!";
       default:
         return "해당 페이지의 내용이 준비되지 않았습니다.";
     }
