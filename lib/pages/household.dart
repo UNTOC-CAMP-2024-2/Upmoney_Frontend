@@ -12,44 +12,61 @@ class _HouseholdPageState extends State<HouseholdPage> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
 
+  final TextEditingController _expand1Controller = TextEditingController();
+  final TextEditingController _consume1Controller = TextEditingController();
+  final TextEditingController _consume2Controller = TextEditingController();
+  final TextEditingController _overlayController = TextEditingController();
+  
+  Map<DateTime, Map<String, dynamic>> _dayData = {};
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: TableCalendar(
-        focusedDay: _focusedDay,
-        firstDay: DateTime.utc(2024, 1, 1),
-        lastDay: DateTime.utc(2025, 12, 31),
-        onDaySelected: (selectedDay, focusedDay) {
-            setState(() {
-              _selectedDay = selectedDay;
-              _focusedDay = focusedDay;
-            });
-            _showCustomDialog(context, selectedDay);
-        },
-        headerStyle: HeaderStyle(
-          formatButtonVisible: false,
-          titleCentered: true,
-        ),
-        calendarBuilders: CalendarBuilders(
-          headerTitleBuilder: (context, day) {
-            String formattedHeader = '${_monthName(day.month)} ${day.year}';
-            return Column(
-              children: [
-                Text(
-                  formattedHeader,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Divider(
-                  color: Colors.grey,
-                  thickness: 1.5,
-                ),
-              ],
-            );
-          },
+      body: Center(
+        child: Container(
+          width: 500,
+          height: 2000,
+          child: TableCalendar(
+            focusedDay: _focusedDay,
+            firstDay: DateTime.utc(2024, 1, 1),
+            lastDay: DateTime.utc(2025, 12, 31),
+            onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay;
+                });
+                _showCustomDialog(context, selectedDay);
+            },
+            headerStyle: HeaderStyle(
+              formatButtonVisible: false,
+              titleCentered: true,
+            ),
+            calendarStyle: CalendarStyle(
+              tablePadding: const EdgeInsets.symmetric(vertical: 8.0), 
+              cellMargin: const EdgeInsets.all(15.0), 
+            ),
+            calendarBuilders: CalendarBuilders(
+              headerTitleBuilder: (context, day) {
+                String formattedHeader = '${_monthName(day.month)} ${day.year}';
+                return Column(
+                  children: [
+                    Text(
+                      formattedHeader,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Divider(
+                      color: Colors.grey,
+                      thickness: 1.5,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
@@ -57,6 +74,13 @@ class _HouseholdPageState extends State<HouseholdPage> {
 
 
   void _showCustomDialog(BuildContext context, DateTime selectedDay) {
+
+  final data = _dayData[selectedDay] ?? {};
+
+  _expand1Controller.text = data['expand']?.toString() ?? '';
+  _consume1Controller.text = data['consume1']?.toString() ?? '';
+  _consume2Controller.text = data['consume2']?.toString() ?? '';
+  
   showDialog(
     context: context,
     builder: (context) {
@@ -135,8 +159,13 @@ class _HouseholdPageState extends State<HouseholdPage> {
                                   child: Container(
                                     width: 150,
                                     child: TextFormField(
-                                      autofocus: true,
+                                      autofocus: false,
                                       keyboardType: TextInputType.number,
+                                      controller: _expand1Controller,
+                                      onTap: () {
+                                        _showKeyboardOverlay(context,'용돈',_expand1Controller);
+                                      },
+                                      readOnly: true,
                                       decoration: InputDecoration(
                                         hintText: '금액',
                                         filled: true,
@@ -211,8 +240,13 @@ class _HouseholdPageState extends State<HouseholdPage> {
                                   child: Container(
                                     width: 150,
                                     child: TextFormField(
-                                      autofocus: true,
+                                      autofocus: false,
                                       keyboardType: TextInputType.number,
+                                      controller: _consume1Controller,
+                                      onTap: (){
+                                        _showKeyboardOverlay(context,'소비',_consume1Controller);
+                                      },
+                                      readOnly: true,
                                       decoration: InputDecoration(
                                         hintText: '금액',
                                         filled: true,
@@ -287,8 +321,13 @@ class _HouseholdPageState extends State<HouseholdPage> {
                                   child: Container(
                                     width: 150,
                                     child: TextFormField(
-                                      autofocus: true,
+                                      autofocus: false,
                                       keyboardType: TextInputType.number,
+                                      controller: _consume2Controller,
+                                      onTap: () {
+                                        _showKeyboardOverlay(context,'소비',_consume2Controller);
+                                      },
+                                      readOnly: true,
                                       decoration: InputDecoration(
                                         hintText: '금액',
                                         filled: true,
@@ -353,6 +392,19 @@ class _HouseholdPageState extends State<HouseholdPage> {
                       const SizedBox(width: 8.0),
                       TextButton(
                         onPressed: () {
+                          setState(() {
+                              _dayData[selectedDay] = {
+                                'expand': int.tryParse(
+                                        _expand1Controller.text) ??
+                                    0,
+                                'consume1': int.tryParse(
+                                        _consume1Controller.text) ??
+                                    0,
+                                'consume2': int.tryParse(
+                                        _consume2Controller.text) ??
+                                    0,
+                              };
+                            });
                           Navigator.of(context).pop(); 
                         },
                         child: Text(
@@ -414,4 +466,92 @@ class _HouseholdPageState extends State<HouseholdPage> {
     ];
     return months[month-1];
   }
-} 
+
+
+    void _showKeyboardOverlay(BuildContext context, String title, TextEditingController controller) {
+    _overlayController.text = controller.text; 
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, 
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom, 
+          ),
+          child: Container(
+            color: Color(0xFFFEF5F8),
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min, 
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: TextFormField(
+                          controller: _overlayController,
+                          autofocus: true,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: '금액 입력',
+                            isDense: true,
+                            filled: true,
+                            fillColor: const Color(0xFFFEF5F8),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),       
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  controller.text = _overlayController.text; 
+                                });
+                                Navigator.pop(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFFA4F60),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                padding: const EdgeInsets.all(0),
+                              ),
+                              child: const Icon(
+                                Icons.telegram_rounded,
+                                size: 30,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
+          } 
