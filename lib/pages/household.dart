@@ -44,24 +44,81 @@ class _HouseholdPageState extends State<HouseholdPage> {
             ),
             calendarStyle: CalendarStyle(
               tablePadding: const EdgeInsets.symmetric(vertical: 8.0), 
-              cellMargin: const EdgeInsets.all(15.0), 
+              cellMargin: const EdgeInsets.all(15.0),
+              todayDecoration: BoxDecoration(
+                color: Color(0xFFD9EFFF),
+                shape: BoxShape.circle,
+              )
             ),
             calendarBuilders: CalendarBuilders(
               headerTitleBuilder: (context, day) {
                 String formattedHeader = '${_monthName(day.month)} ${day.year}';
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Color(0xFFD9EFFF),
+                        shape: BoxShape.circle,
+                      ),
+                    ),                
+                    Column(
+                      children: [
+                        Text(
+                          formattedHeader,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Divider(
+                          color: Colors.grey,
+                          thickness: 1.5,
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+               todayBuilder: (context, day, focusedDay) {
+                final data = _dayData[day] ?? {'expand' : 0, 'consume' : 0};
                 return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      formattedHeader,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    '${day.day}',
+                    style: TextStyle(
+                    fontSize: 16,)
+                    ), 
+                    if (data['expand'] != 0) 
+                      Text(
+                        '+${data['expand']}',
+                        style: TextStyle(fontSize: 12, color: Colors.red),
                       ),
-                    ),
-                    const Divider(
-                      color: Colors.grey,
-                      thickness: 1.5,
-                    ),
+                    if (data['consume'] != 0) 
+                      Text(
+                        '${data['consume']}',
+                        style: TextStyle(fontSize: 12, color: Colors.green),
+                      ),
+                  ],
+                );
+              },
+              defaultBuilder: (context, day, focusedDay) {
+                final data = _dayData[day] ?? {'expand' : 0, 'consume' : 0};
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('${day.day}', style: TextStyle(fontSize: 16)), 
+                    if (data['expand'] != 0) 
+                      Text(
+                        '+${data['expand']}',
+                        style: TextStyle(fontSize: 12, color: Colors.red),
+                      ),
+                    if (data['consume'] != 0) 
+                      Text(
+                        '${data['consume']}',
+                        style: TextStyle(fontSize: 12, color: Colors.green),
+                      ),
                   ],
                 );
               },
@@ -75,7 +132,7 @@ class _HouseholdPageState extends State<HouseholdPage> {
 
   void _showCustomDialog(BuildContext context, DateTime selectedDay) {
 
-  final data = _dayData[selectedDay] ?? {};
+  final data = _dayData[selectedDay] ?? {'expand': 0, 'consume1': 0, 'consume2': 0};
 
   _expand1Controller.text = data['expand']?.toString() ?? '';
   _consume1Controller.text = data['consume1']?.toString() ?? '';
@@ -380,6 +437,22 @@ class _HouseholdPageState extends State<HouseholdPage> {
                     children: [
                       TextButton(
                         onPressed: () {
+                          setState(() {
+                            _dayData.remove(_selectedDay);
+                            _expand1Controller.clear();
+                            _consume1Controller.clear();
+                            _consume2Controller.clear();
+                          });
+                          Navigator.of(context).pop();
+                        }, 
+                        child: Text(
+                          '초기화',
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        )),
+                      TextButton(
+                        onPressed: () {
                           Navigator.of(context).pop(); 
                         },
                         child: Text(
@@ -393,18 +466,22 @@ class _HouseholdPageState extends State<HouseholdPage> {
                       TextButton(
                         onPressed: () {
                           setState(() {
-                              _dayData[selectedDay] = {
-                                'expand': int.tryParse(
-                                        _expand1Controller.text) ??
-                                    0,
-                                'consume1': int.tryParse(
-                                        _consume1Controller.text) ??
-                                    0,
-                                'consume2': int.tryParse(
-                                        _consume2Controller.text) ??
-                                    0,
-                              };
-                            });
+                            final currentExpand = _dayData[_selectedDay]?['expand'] ?? 0;
+                            final currentConsume = _dayData[_selectedDay]?['consume'] ?? 0;
+
+                            final newExpand = int.tryParse(_expand1Controller.text) ?? 0;
+                            final newConsume = (int.tryParse(_consume1Controller.text) ?? 0) +
+                                (int.tryParse(_consume2Controller.text) ?? 0);
+
+                            _dayData[_selectedDay] = {
+                              'expand': currentExpand + newExpand,
+                              'consume': currentConsume + newConsume, 
+                            };
+
+                            _expand1Controller.clear();
+                            _consume1Controller.clear();
+                            _consume2Controller.clear();
+                          });
                           Navigator.of(context).pop(); 
                         },
                         child: Text(
