@@ -12,7 +12,7 @@ class _HouseholdPageState extends State<HouseholdPage> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
 
-  final TextEditingController _expand1Controller = TextEditingController();
+  final TextEditingController _expandController = TextEditingController();
   final TextEditingController _consume1Controller = TextEditingController();
   final TextEditingController _consume2Controller = TextEditingController();
   final TextEditingController _overlayController = TextEditingController();
@@ -24,9 +24,6 @@ class _HouseholdPageState extends State<HouseholdPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: Container(
-          width: 500,
-          height: 2000,
           child: TableCalendar(
             focusedDay: _focusedDay,
             firstDay: DateTime.utc(2024, 1, 1),
@@ -38,6 +35,7 @@ class _HouseholdPageState extends State<HouseholdPage> {
                 });
                 _showCustomDialog(context, selectedDay);
             },
+            rowHeight: 80.0,
             headerStyle: HeaderStyle(
               formatButtonVisible: false,
               titleCentered: true,
@@ -97,7 +95,7 @@ class _HouseholdPageState extends State<HouseholdPage> {
                       ),
                     if (data['consume'] != 0) 
                       Text(
-                        '${data['consume']}',
+                        '-${data['consume']}',
                         style: TextStyle(fontSize: 12, color: Colors.green),
                       ),
                   ],
@@ -116,15 +114,14 @@ class _HouseholdPageState extends State<HouseholdPage> {
                       ),
                     if (data['consume'] != 0) 
                       Text(
-                        '${data['consume']}',
-                        style: TextStyle(fontSize: 12, color: Colors.green),
+                        '-${data['consume']}',
+                        style: TextStyle(fontSize: 12, color: Colors.blue),
                       ),
                   ],
                 );
               },
             ),
           ),
-        ),
       ),
     );
   }
@@ -132,11 +129,15 @@ class _HouseholdPageState extends State<HouseholdPage> {
 
   void _showCustomDialog(BuildContext context, DateTime selectedDay) {
 
-  final data = _dayData[selectedDay] ?? {'expand': 0, 'consume1': 0, 'consume2': 0};
+  final data = _dayData[selectedDay] ?? {'expand': '', 'consume1': '', 'consume2': ''};
 
-  _expand1Controller.text = data['expand']?.toString() ?? '';
+  _expandController.text = data['expand']?.toString() ?? '';
   _consume1Controller.text = data['consume1']?.toString() ?? '';
   _consume2Controller.text = data['consume2']?.toString() ?? '';
+
+  _expandController.clear();
+  _consume1Controller.clear();
+  _consume2Controller.clear();
   
   showDialog(
     context: context,
@@ -218,9 +219,9 @@ class _HouseholdPageState extends State<HouseholdPage> {
                                     child: TextFormField(
                                       autofocus: false,
                                       keyboardType: TextInputType.number,
-                                      controller: _expand1Controller,
+                                      controller: _expandController,
                                       onTap: () {
-                                        _showKeyboardOverlay(context,'용돈',_expand1Controller);
+                                        _showKeyboardOverlay(context,'용돈',_expandController);
                                       },
                                       readOnly: true,
                                       decoration: InputDecoration(
@@ -439,7 +440,7 @@ class _HouseholdPageState extends State<HouseholdPage> {
                         onPressed: () {
                           setState(() {
                             _dayData.remove(_selectedDay);
-                            _expand1Controller.clear();
+                            _expandController.clear();
                             _consume1Controller.clear();
                             _consume2Controller.clear();
                           });
@@ -469,7 +470,7 @@ class _HouseholdPageState extends State<HouseholdPage> {
                             final currentExpand = _dayData[_selectedDay]?['expand'] ?? 0;
                             final currentConsume = _dayData[_selectedDay]?['consume'] ?? 0;
 
-                            final newExpand = int.tryParse(_expand1Controller.text) ?? 0;
+                            final newExpand = int.tryParse(_expandController.text) ?? 0;
                             final newConsume = (int.tryParse(_consume1Controller.text) ?? 0) +
                                 (int.tryParse(_consume2Controller.text) ?? 0);
 
@@ -477,8 +478,7 @@ class _HouseholdPageState extends State<HouseholdPage> {
                               'expand': currentExpand + newExpand,
                               'consume': currentConsume + newConsume, 
                             };
-
-                            _expand1Controller.clear();
+                            _expandController.clear();
                             _consume1Controller.clear();
                             _consume2Controller.clear();
                           });
