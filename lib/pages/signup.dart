@@ -7,13 +7,7 @@ class SignUpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "회원가입",
-          style: TextStyle(
-            color: const Color(0xFF081F5C),
-            fontWeight: FontWeight.bold,
-           ),
-          ),
+        title: const Text("회원가입"),
         backgroundColor: const Color(0xffF4F4FE),
         elevation: 0,
       ),
