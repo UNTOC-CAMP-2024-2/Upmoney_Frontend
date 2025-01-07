@@ -61,11 +61,10 @@ class MyPage extends StatelessWidget {
             width: double.infinity, 
             height: 320, 
             decoration: BoxDecoration(
-              color:Colors.yellow,
-              // image: DecorationImage(
-              //   image: AssetImage('assets/images/.png'), 
-              //   fit: BoxFit.cover, 
-              // ),
+              image: DecorationImage(
+                image: AssetImage('assets/images/money_luck_01.png'), 
+                fit: BoxFit.fitHeight, 
+              ),
             ),
           ),
           // Section 3: 공지사항 등...
