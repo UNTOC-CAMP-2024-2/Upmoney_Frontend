@@ -69,8 +69,31 @@ class _NavigationState extends State<Navigation> {
         ),
       ),
       appBar: AppBar(
-        title: const Text("UpMoney"),
+        title: Row(
+          children: [
+            const Icon(
+              Icons.monetization_on, 
+              color: Color(0xFF081F5C),
+              size: 40, 
+            ),
+            const SizedBox(width: 8), // 아이콘과 텍스트 사이 간격
+            const Text(
+              "UpMoney",
+              style: TextStyle(
+                color: Color(0xFF081F5C),
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(
+          color: Color(0xFF081F5C),
+        ),
+        elevation: 0,
       ),
+
       body: Center(
         child: IndexedStack(
           index: selectIndex,
