@@ -83,23 +83,33 @@ class MyPage extends StatelessWidget {
     );
   }
 
-  Widget _buildListTile(BuildContext context, String title, Widget nextpage){
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 25,
-          fontWeight: FontWeight.w500,
-        ),
+Widget _buildListTile(BuildContext context, String title, Widget nextpage, {bool isLastItem = false}) {
+  return Column(
+    children: [
+      ListTile(
+        contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         trailing: const Icon(Icons.chevron_right),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => nextpage),
-            );
+          );
         },
+      ),
+      if (!isLastItem) // 마지막 항목이 아니면 아래쪽 선 추가
+        const Divider(
+          thickness: 1.0,
+          color: Colors.grey,
+          height: 0,
+        ),
+      ],
     );
   }
 }
