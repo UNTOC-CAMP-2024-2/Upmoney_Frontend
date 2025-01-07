@@ -1,22 +1,11 @@
 import 'package:flutter/material.dart';
 
-// void main() {
-//   runApp(const MyApp());
-// }
-
 class ScholarshipPage extends StatelessWidget {
-  const ScholarshipPage ({super.key});
+  const ScholarshipPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'UPmoney',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: HomePage(),
-    );
+    return HomePage();
   }
 }
 
@@ -30,12 +19,11 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('UPmoney 💰'),
             Row(
-              children: [
+              children: const [
                 CategoryButton(label: 'PNU'),
                 CategoryButton(label: 'PNU_CSE'),
                 CategoryButton(label: '국가장학금'),
@@ -62,30 +50,48 @@ class HomePage extends StatelessWidget {
             child: ListView.builder(
               itemCount: scholarships.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(scholarships[index]),
-                  trailing: const Icon(Icons.arrow_forward),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ScholarshipDetailPage(
-                        scholarshipName: scholarships[index],
-                      ),
+                return Container(
+                  height: 80.0, // 항목 높이를 고정
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey.shade300, width: 1.0),
+                    ),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ScholarshipDetailPage(
+                            scholarshipName: scholarships[index],
+                          ),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                            scholarships[index],
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Icon(Icons.arrow_forward),
+                        ),
+                      ],
                     ),
                   ),
                 );
               },
             ),
           ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.attach_money), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.school), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
         ],
       ),
     );
