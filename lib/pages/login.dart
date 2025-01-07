@@ -11,6 +11,7 @@ class LoginPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("로그인"),
       ),
+      backgroundColor:  const Color.fromARGB(244, 187, 204, 235),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -21,7 +22,7 @@ class LoginPage extends StatelessWidget {
               Align(
                 alignment: Alignment.center,
                 child: Container(
-                  width: 420, // 가로 크기
+                  width: 400, // 가로 크기
                   height: 60, // 세로 크기
                   child: TextField(
                     decoration: const InputDecoration(
@@ -36,7 +37,7 @@ class LoginPage extends StatelessWidget {
               Align(
                 alignment: Alignment.center,
                 child: Container(
-                  width: 420, // 가로 크기
+                  width: 400, // 가로 크기
                   height: 60, // 세로 크기
                   child: TextField(
                     obscureText: true,
@@ -52,7 +53,7 @@ class LoginPage extends StatelessWidget {
               Align(
                 alignment: Alignment.center,
                 child: Container(
-                  width: 420, // 가로 크기
+                  width: 400, // 가로 크기
                   height: 60, // 세로 크기
                   child: ElevatedButton(
                     onPressed: () {
@@ -73,16 +74,28 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 16), // 간격
               // 회원가입 버튼
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SignUpPage(),
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 280, // 버튼 크기
+                  height: 50, // 버튼 높이
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignUpPage(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "회원가입하기",
+                      style: TextStyle(
+                        fontSize: 16, // 텍스트 크기 증가
+                      ),
                     ),
-                  );
-                },
-                child: const Text("회원가입하기"),
+                  ),
+                ),
               ),
             ],
           ),

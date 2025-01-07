@@ -9,38 +9,64 @@ class SignUpPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("회원가입"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // 이메일 입력 필드
-            TextField(
-              decoration: const InputDecoration(
-                labelText: "이메일",
-                border: OutlineInputBorder(),
+      backgroundColor:  const Color.fromARGB(244, 187, 204, 235),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 이메일 입력 필드
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 400, // 가로 크기
+                  height: 60, // 세로 크기
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      labelText: "이메일",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            // 비밀번호 입력 필드
-            TextField(
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: "비밀번호",
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16), // 간격
+              // 비밀번호 입력 필드
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 400, // 가로 크기
+                  height: 60, // 세로 크기
+                  child: TextField(
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: "비밀번호",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            // 회원가입 버튼
-            ElevatedButton(
-              onPressed: () {
-                // 회원가입 로직
-                // 예: Navigator.pop(context); // 회원가입 후 이전 페이지로 돌아가기
-              },
-              child: const Text("회원가입"),
-            ),
-          ],
+              const SizedBox(height: 16), // 간격
+              // 회원가입 버튼
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 400, // 가로 크기
+                  height: 60, // 세로 크기
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // 회원가입 완료 후 이전 페이지로 돌아가기
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      "회원가입",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
