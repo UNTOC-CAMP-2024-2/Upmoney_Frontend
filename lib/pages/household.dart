@@ -19,109 +19,121 @@ class _HouseholdPageState extends State<HouseholdPage> {
   
   Map<DateTime, Map<String, dynamic>> _dayData = {};
 
+  bool _showButtons = false; 
+  final List<String> _buttonLabels = ['식비', '교육', '저축', '취미, 여가', '교통', '기타'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-          child: TableCalendar(
-            focusedDay: _focusedDay,
-            firstDay: DateTime.utc(2024, 1, 1),
-            lastDay: DateTime.utc(2025, 12, 31),
-            onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-                _showCustomDialog(context, selectedDay);
-            },
-            rowHeight: 80.0,
-            headerStyle: HeaderStyle(
-              formatButtonVisible: false,
-              titleCentered: true,
-            ),
-            calendarStyle: CalendarStyle(
-              tablePadding: const EdgeInsets.symmetric(vertical: 8.0), 
-              cellMargin: const EdgeInsets.all(15.0),
-              todayDecoration: BoxDecoration(
-                color: Color(0xFFD9EFFF),
-                shape: BoxShape.circle,
-              )
-            ),
-            calendarBuilders: CalendarBuilders(
-              headerTitleBuilder: (context, day) {
-                String formattedHeader = '${_monthName(day.month)} ${day.year}';
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFFD9EFFF),
-                        shape: BoxShape.circle,
-                      ),
-                    ),                
-                    Column(
-                      children: [
-                        Text(
-                          formattedHeader,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+      backgroundColor: Color(0xFFFCFCFC),
+      body: Container(
+        width: 503,
+        height: 600,
+        padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Center(
+            child: TableCalendar(
+              focusedDay: _focusedDay,
+              firstDay: DateTime.utc(2024, 1, 1),
+              lastDay: DateTime.utc(2025, 12, 31),
+              onDaySelected: (selectedDay, focusedDay) {
+                  setState(() {
+                    _selectedDay = selectedDay;
+                    _focusedDay = focusedDay;
+                  });
+                  _showCustomDialog(context, selectedDay);
+              },
+              rowHeight: 90.0,
+              headerStyle: HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: true,
+              ),
+              calendarStyle: CalendarStyle(
+                tablePadding: const EdgeInsets.symmetric(vertical: 8.0), 
+                cellMargin: const EdgeInsets.all(15.0),
+                todayDecoration: BoxDecoration(
+                  color: Color(0xFFD9EFFF),
+                  shape: BoxShape.circle,
+                )
+              ),
+              calendarBuilders: CalendarBuilders(
+                headerTitleBuilder: (context, day) {
+                  String formattedHeader = '${_monthName(day.month)} ${day.year}';
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xFFD9EFFF),
+                          shape: BoxShape.circle,
+                        ),
+                      ),                
+                      Column(
+                        children: [
+                          Text(
+                            formattedHeader,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
+                          const Divider(
+                            color: Colors.grey,
+                            thickness: 1.5,
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+                 todayBuilder: (context, day, focusedDay) {
+                  final data = _dayData[day] ?? {'expand' : 0, 'consume' : 0};
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                      '${day.day}',
+                      style: TextStyle(
+                      fontSize: 16,)
+                      ), 
+                      if (data['expand'] != 0) 
+                        Text(
+                          '+${data['expand']}',
+                          style: TextStyle(fontSize: 12, color: Colors.red),
                         ),
-                        const Divider(
-                          color: Colors.grey,
-                          thickness: 1.5,
+                      if (data['consume'] != 0) 
+                        Text(
+                          '-${data['consume']}',
+                          style: TextStyle(fontSize: 12, color: Colors.green),
                         ),
-                      ],
-                    ),
-                  ],
-                );
-              },
-               todayBuilder: (context, day, focusedDay) {
-                final data = _dayData[day] ?? {'expand' : 0, 'consume' : 0};
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                    '${day.day}',
-                    style: TextStyle(
-                    fontSize: 16,)
-                    ), 
-                    if (data['expand'] != 0) 
-                      Text(
-                        '+${data['expand']}',
-                        style: TextStyle(fontSize: 12, color: Colors.red),
-                      ),
-                    if (data['consume'] != 0) 
-                      Text(
-                        '-${data['consume']}',
-                        style: TextStyle(fontSize: 12, color: Colors.green),
-                      ),
-                  ],
-                );
-              },
-              defaultBuilder: (context, day, focusedDay) {
-                final data = _dayData[day] ?? {'expand' : 0, 'consume' : 0};
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('${day.day}', style: TextStyle(fontSize: 16)), 
-                    if (data['expand'] != 0) 
-                      Text(
-                        '+${data['expand']}',
-                        style: TextStyle(fontSize: 12, color: Colors.red),
-                      ),
-                    if (data['consume'] != 0) 
-                      Text(
-                        '-${data['consume']}',
-                        style: TextStyle(fontSize: 12, color: Colors.blue),
-                      ),
-                  ],
-                );
-              },
+                    ],
+                  );
+                },
+                defaultBuilder: (context, day, focusedDay) {
+                  final data = _dayData[day] ?? {'expand' : 0, 'consume' : 0};
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('${day.day}', style: TextStyle(fontSize: 16)), 
+                      if (data['expand'] != 0) 
+                        Text(
+                          '+${data['expand']}',
+                          style: TextStyle(fontSize: 12, color: Colors.red),
+                        ),
+                      if (data['consume'] != 0) 
+                        Text(
+                          '-${data['consume']}',
+                          style: TextStyle(fontSize: 12, color: Colors.blue),
+                        ),
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
+        ),
       ),
     );
   }
@@ -546,74 +558,115 @@ class _HouseholdPageState extends State<HouseholdPage> {
 
 
     void _showKeyboardOverlay(BuildContext context, String title, TextEditingController controller) {
-    _overlayController.text = controller.text; 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, 
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom, 
-          ),
-          child: Container(
-            color: Color(0xFFFEF5F8),
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min, 
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
+  _overlayController.text = controller.text;
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter modalSetState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Container(
+              color: const Color(0xFFFEF5F8),
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: TextFormField(
-                          controller: _overlayController,
-                          autofocus: true,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: '금액 입력',
-                            isDense: true,
-                            filled: true,
-                            fillColor: const Color(0xFFFEF5F8),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: TextFormField(
+                            controller: _overlayController,
+                            autofocus: true,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: '금액 입력',
+                              isDense: true,
+                              filled: true,
+                              fillColor: const Color(0xFFFEF5F8),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
                             ),
                           ),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),       
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  controller.text = _overlayController.text; 
-                                });
-                                Navigator.pop(context);
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.text_rotation_angledown_sharp, size: 40, color: Color(0xFFFA4F60)),
+                        onPressed: () {
+                          modalSetState(() {
+                            _showButtons = !_showButtons;
+                          });
+                        },
+                      ),
+                      const SizedBox(width: 10),
+                      if (_showButtons)
+                        Expanded(
+                          child: Container(
+                            height: 50,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _buttonLabels.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      print("${_buttonLabels[index]} clicked!");
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      minimumSize: const Size(100, 40),
+                                    ),
+                                    child: Text(
+                                      _buttonLabels[index],
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                );
                               },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFFA4F60),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18),
+                            ),
+                          ),
+                        ),
+                   Spacer(),
+                    const SizedBox(height: 16),       
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            controller.text = _overlayController.text; 
+                              });
+                              Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFFA4F60),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
                                 ),
                                 padding: const EdgeInsets.all(0),
                               ),
@@ -624,11 +677,16 @@ class _HouseholdPageState extends State<HouseholdPage> {
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-            }
-          } 
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+    } 
