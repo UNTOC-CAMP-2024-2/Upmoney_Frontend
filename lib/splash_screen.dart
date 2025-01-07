@@ -15,7 +15,7 @@ class SplashScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(244, 187, 204, 235),
+      backgroundColor: const Color(0xffF4F4FE),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -24,7 +24,7 @@ class SplashScreen extends StatelessWidget {
             const Icon(
               Icons.monetization_on,
               size: 100,
-              color: Colors.white,
+              color: const Color(0xFF081F5C),
             ),
             const SizedBox(height: 16),
 
@@ -33,7 +33,7 @@ class SplashScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: const Color(0xFF081F5C),
               ),
             ),
           ],
