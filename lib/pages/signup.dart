@@ -1,7 +1,80 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
+
+  @override
+  _SignUpPageState createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  final idController = TextEditingController();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+  final ageController = TextEditingController();
+  final genderController = TextEditingController();
+
+  Future<void> signUp() async {
+    final url = Uri.parse('http://your-backend-url/register');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'userid': idController.text.trim(),
+          'username': usernameController.text.trim(),
+          'password': passwordController.text.trim(),
+          'age': int.tryParse(ageController.text.trim()) ?? 0,
+          'gender': genderController.text.trim(),
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _showSuccessDialog('회원가입 성공! 로그인 해주세요.');
+      } else {
+        _showErrorDialog('회원가입 실패: ${response.body}');
+      }
+    } catch (e) {
+      _showErrorDialog('네트워크 오류가 발생했습니다.');
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('오류'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('확인'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('성공'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text('확인'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,63 +84,115 @@ class SignUpPage extends StatelessWidget {
         backgroundColor: const Color(0xffF4F4FE),
         elevation: 0,
       ),
-      backgroundColor:  const Color(0xffF4F4FE),
+      backgroundColor: const Color(0xffF4F4FE),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // 이메일 입력 필드
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: 400, // 가로 크기
-                  height: 60, // 세로 크기
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      labelText: "이메일",
-                      border: OutlineInputBorder(),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: 400,
+                    height: 60,
+                    child: TextField(
+                      controller: idController,
+                      decoration: const InputDecoration(
+                        labelText: "아이디",
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16), // 간격
-              // 비밀번호 입력 필드
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: 400, // 가로 크기
-                  height: 60, // 세로 크기
-                  child: TextField(
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: "비밀번호",
-                      border: OutlineInputBorder(),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: 400,
+                    height: 60,
+                    child: TextField(
+                      controller: usernameController,
+                      decoration: const InputDecoration(
+                        labelText: "이름",
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16), // 간격
-              // 회원가입 버튼
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: 400, // 가로 크기
-                  height: 60, // 세로 크기
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // 회원가입 완료 후 이전 페이지로 돌아가기
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      "회원가입",
-                      style: TextStyle(fontSize: 18),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: 400,
+                    height: 60,
+                    child: TextField(
+                      controller: passwordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: "비밀번호",
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: 400,
+                    height: 60,
+                    child: TextField(
+                      controller: ageController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: "나이",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: 400,
+                    height: 60,
+                    child: TextField(
+                      controller: genderController,
+                      decoration: const InputDecoration(
+                        labelText: "성별",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: 400,
+                    height: 60,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (idController.text.isEmpty ||
+                            usernameController.text.isEmpty ||
+                            passwordController.text.isEmpty) {
+                          _showErrorDialog('모든 필드를 채워주세요.');
+                        } else {
+                          signUp();
+                        }
+                      },
+                      child: const Text(
+                        "회원가입",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
