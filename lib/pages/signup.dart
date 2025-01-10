@@ -14,7 +14,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final ageController = TextEditingController();
-  final genderController = TextEditingController();
+  String? selectedGender; // 선택된 성별
 
   Future<void> signUp() async {
     final url = Uri.parse('http://your-backend-url/register');
@@ -27,7 +27,7 @@ class _SignUpPageState extends State<SignUpPage> {
           'username': usernameController.text.trim(),
           'password': passwordController.text.trim(),
           'age': int.tryParse(ageController.text.trim()) ?? 0,
-          'gender': genderController.text.trim(),
+          'gender': selectedGender, // 선택된 성별 전달
         }),
       );
 
@@ -138,6 +138,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
+                //나이
                 Align(
                   alignment: Alignment.center,
                   child: SizedBox(
@@ -154,18 +155,46 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
+                //성별
                 Align(
                   alignment: Alignment.center,
-                  child: SizedBox(
-                    width: 400,
-                    height: 60,
-                    child: TextField(
-                      controller: genderController,
-                      decoration: const InputDecoration(
-                        labelText: "성별",
-                        border: OutlineInputBorder(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "성별",
+                        style: TextStyle(fontSize: 16),
                       ),
-                    ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: RadioListTile<String>(
+                              title: const Text("남성"),
+                              value: "male",
+                              groupValue: selectedGender,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedGender = value;
+                                });
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: RadioListTile<String>(
+                              title: const Text("여성"),
+                              value: "female",
+                              groupValue: selectedGender,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedGender = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -178,7 +207,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       onPressed: () {
                         if (idController.text.isEmpty ||
                             usernameController.text.isEmpty ||
-                            passwordController.text.isEmpty) {
+                            passwordController.text.isEmpty ||
+                            selectedGender == null) {
                           _showErrorDialog('모든 필드를 채워주세요.');
                         } else {
                           signUp();
