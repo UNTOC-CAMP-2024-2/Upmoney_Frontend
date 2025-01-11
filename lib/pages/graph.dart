@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-
 class GraphPage extends StatefulWidget {
   const GraphPage({super.key});
 
@@ -27,15 +26,29 @@ class _GraphPageState extends State<GraphPage> {
           backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: false,
-          title: const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'UPmoney',
-              style: TextStyle(
-                color: Color.fromARGB(218, 13, 40, 121),
-                fontWeight: FontWeight.bold,
+          title: Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                color: const Color.fromARGB(218, 13, 40, 121),
+                iconSize: 30,
+                onPressed: () {
+                  Navigator.of(context).pop(); // 이전 페이지로 이동
+                },
               ),
-            ),
+              const SizedBox(width: 10), // 버튼과 로고 사이 간격
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'UPmoney',
+                  style: TextStyle(
+                    color: Color.fromARGB(218, 13, 40, 121),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24, // 로고 크기
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         body: SingleChildScrollView(
@@ -47,12 +60,12 @@ class _GraphPageState extends State<GraphPage> {
                 child: DonutChart(
                   percentages: percentages,
                   colors: const [
-                    Color.fromARGB(255, 21, 47, 78), // 등록금
-                    Color.fromARGB(255, 0, 0, 128), // 취미, 여가
-                    Colors.yellowAccent, // 교육
-                    Colors.pinkAccent, // 저축
-                    Colors.greenAccent, // 교통
-                    Colors.orangeAccent, // 기타
+                    Color(0xFFED6D4A), // 등록금
+                    Color(0xFF9FC3B2), // 취미, 여가
+                    Color(0xFFF9CF64), // 교육
+                    Color(0xFFF5F1E0), // 저축
+                    Color(0xFFD9E9A3), // 교통
+                    Color(0xFFA1CA7A), // 기타
                   ],
                 ),
               ),
@@ -70,32 +83,32 @@ class _GraphPageState extends State<GraphPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     LegendItem(
-                      color: const Color.fromARGB(255, 21, 47, 78),
+                      color: const Color(0xFFED6D4A), // 등록금
                       title: '등록금',
                       amount: '${amounts[0].toStringAsFixed(0)}원',
                     ),
                     LegendItem(
-                      color: const Color.fromARGB(255, 0, 0, 128),
+                      color: const Color(0xFF9FC3B2), // 취미, 여가
                       title: '취미, 여가',
                       amount: '${amounts[1].toStringAsFixed(0)}원',
                     ),
                     LegendItem(
-                      color: Colors.yellowAccent,
+                      color: const Color(0xFFF9CF64), // 교육
                       title: '교육',
                       amount: '${amounts[2].toStringAsFixed(0)}원',
                     ),
                     LegendItem(
-                      color: Colors.greenAccent,
-                      title: '교통',
+                      color: const Color(0xFFF5F1E0), // 저축
+                      title: '저축',
                       amount: '${amounts[3].toStringAsFixed(0)}원',
                     ),
                     LegendItem(
-                      color: Colors.pinkAccent,
-                      title: '저축',
+                      color: const Color(0xFFD9E9A3), // 교통
+                      title: '교통',
                       amount: '${amounts[4].toStringAsFixed(0)}원',
                     ),
                     LegendItem(
-                      color: Colors.orangeAccent,
+                      color: const Color(0xFFA1CA7A), // 기타
                       title: '기타',
                       amount: '${amounts[5].toStringAsFixed(0)}원',
                     ),
@@ -109,6 +122,8 @@ class _GraphPageState extends State<GraphPage> {
     );
   }
 }
+
+// 기존 DonutChart, DonutChartPainter, LegendItem 클래스는 그대로 유지
 
 class DonutChart extends StatelessWidget {
   final List<double> percentages;
@@ -162,7 +177,7 @@ class DonutChartPainter extends CustomPainter {
     paint.style = PaintingStyle.fill;
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
-      size.width / 3.5,
+      size.width / 3.0, // 작은 원의 반지름 비율 (조정된 값)
       paint,
     );
   }
@@ -195,8 +210,8 @@ class LegendItem extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 12,
-                height: 12,
+                width: 20.4, // 기존 12 * 1.7
+                height: 20.4, // 기존 12 * 1.7
                 decoration: BoxDecoration(
                   color: color,
                   shape: BoxShape.circle,
