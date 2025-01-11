@@ -78,27 +78,54 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  void _showAgePicker() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: 250,
-          child: CupertinoPicker(
-            backgroundColor: Colors.white,
-            itemExtent: 32.0,
-            onSelectedItemChanged: (int index) {
-              setState(() {
-                selectedAge = ageOptions[index];
-              });
-            },
-            children: ageOptions.map((age) => Text('$age세')).toList(),
-          ),
-        );
-      },
-    );
-  }
+void _showAgePicker() {
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      int temporarySelectedAge = selectedAge ?? ageOptions.first; // 임시 선택 값
 
+      return SizedBox(
+        height: 300,
+        child: Column(
+          children: [
+            Expanded(
+              child: CupertinoPicker(
+                backgroundColor: Colors.white,
+                itemExtent: 32.0,
+                scrollController: FixedExtentScrollController(
+                  initialItem: ageOptions.indexOf(selectedAge ?? ageOptions.first),
+                ),
+                onSelectedItemChanged: (int index) {
+                  temporarySelectedAge = ageOptions[index];
+                },
+                children: ageOptions.map((age) => Text('$age세')).toList(),
+              ),
+            ),
+            const Divider(height: 1, color: Colors.grey), // 구분선 추가
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedAge = temporarySelectedAge; // 최종 선택 값 저장
+                });
+                Navigator.pop(context); // 창 닫기
+              },
+              child: Container(
+                width: double.infinity, // 버튼을 화면 전체로 확장
+                color: Colors.white, // 배경색 흰색 설정
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                alignment: Alignment.center,
+                child: const Text(
+                  '확인',
+                  style: TextStyle(fontSize: 16, color: Colors.black), // 검은 글씨
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,17 +189,23 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // 나이 선택 (CupertinoPicker)
+                // 나이 선택 박스
                 Align(
                   alignment: Alignment.center,
-                  child: SizedBox(
-                    width: 400,
-                    height: 60,
-                    child: OutlinedButton(
-                      onPressed: _showAgePicker,
+                  child: GestureDetector(
+                    onTap: _showAgePicker,
+                    child: Container(
+                      width: 400,
+                      height: 60,
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
                       child: Text(
                         selectedAge != null ? '$selectedAge세' : '나이 선택',
-                        style: const TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16, color: Colors.black),
                       ),
                     ),
                   ),
