@@ -688,5 +688,4 @@ class _HouseholdPageState extends State<HouseholdPage> {
     },
   );
 }
-
-    } 
+} 
