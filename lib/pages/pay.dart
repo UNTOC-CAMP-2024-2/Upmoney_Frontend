@@ -70,7 +70,7 @@ class _PayPageState extends State<PayPage> {
                             width: 313,
                             height: 328,
                             decoration: BoxDecoration(
-                              color: const Color.fromRGBO(221, 227, 255, 1.0),
+                              color: const Color(0xFFDFE8FF),
                               boxShadow: const [
                                 BoxShadow(
                                   blurRadius: 4,
@@ -104,7 +104,7 @@ class _PayPageState extends State<PayPage> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16),
                               decoration: BoxDecoration(
-                                color: const Color.fromRGBO(221, 227, 255, 1.0),
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(1000),
                                 border: Border.all(
                                   color:
@@ -122,8 +122,8 @@ class _PayPageState extends State<PayPage> {
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                 ),
-                                dropdownColor:
-                                    const Color.fromRGBO(221, 227, 255, 1.0),
+                                dropdownColor: Colors.white,
+                                borderRadius: BorderRadius.circular(15),
                                 items: dataOptions.keys.map((String option) {
                                   return DropdownMenuItem<String>(
                                     value: option,
@@ -242,7 +242,7 @@ class _PayPageState extends State<PayPage> {
                             width: 313,
                             height: 136,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF3F5FF),
+                              color: Colors.white,
                               boxShadow: const [
                                 BoxShadow(
                                   blurRadius: 4,
@@ -278,7 +278,7 @@ class _PayPageState extends State<PayPage> {
                             width: 313,
                             height: 45,
                             decoration: const BoxDecoration(
-                              color: Colors.white,
+                              color: Color(0xffDFE8FF),
                               borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(12),
                                 bottomRight: Radius.circular(12),
@@ -374,7 +374,7 @@ class _PayPageState extends State<PayPage> {
                                     width: 117,
                                     height: 112,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF081F5C),
+                                      color: const Color(0xFF6F96F7),
                                       boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 4,
@@ -467,7 +467,7 @@ class _PayPageState extends State<PayPage> {
                                     width: 117,
                                     height: 112,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF081F5C),
+                                      color: const Color(0xFF6F96F7),
                                       boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 4,
@@ -560,7 +560,7 @@ class _PayPageState extends State<PayPage> {
                                     width: 117,
                                     height: 112,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFEC505D),
+                                      color: const Color(0xFFFA787A),
                                       boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 4,
@@ -653,7 +653,7 @@ class _PayPageState extends State<PayPage> {
                                     width: 117,
                                     height: 112,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF081F5C),
+                                      color: const Color(0xFF6F96F7),
                                       boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 4,
@@ -746,7 +746,7 @@ class _PayPageState extends State<PayPage> {
                                     width: 117,
                                     height: 112,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF081F5C),
+                                      color: const Color(0xFF6F96F7),
                                       boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 4,
