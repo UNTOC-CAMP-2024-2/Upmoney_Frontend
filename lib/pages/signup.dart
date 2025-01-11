@@ -78,54 +78,107 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-void _showAgePicker() {
-  showModalBottomSheet(
-    context: context,
-    builder: (BuildContext context) {
-      int temporarySelectedAge = selectedAge ?? ageOptions.first; // 임시 선택 값
+  void _showAgePicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        int temporarySelectedAge = selectedAge ?? ageOptions.first; // 임시 선택 값
 
-      return SizedBox(
-        height: 300,
-        child: Column(
-          children: [
-            Expanded(
-              child: CupertinoPicker(
-                backgroundColor: Colors.white,
-                itemExtent: 32.0,
-                scrollController: FixedExtentScrollController(
-                  initialItem: ageOptions.indexOf(selectedAge ?? ageOptions.first),
+        return SizedBox(
+          height: 300,
+          child: Column(
+            children: [
+              Expanded(
+                child: CupertinoPicker(
+                  backgroundColor: Colors.white,
+                  itemExtent: 32.0,
+                  scrollController: FixedExtentScrollController(
+                    initialItem: ageOptions.indexOf(selectedAge ?? ageOptions.first),
+                  ),
+                  onSelectedItemChanged: (int index) {
+                    temporarySelectedAge = ageOptions[index];
+                  },
+                  children: ageOptions.map((age) => Text('$age세')).toList(),
                 ),
-                onSelectedItemChanged: (int index) {
-                  temporarySelectedAge = ageOptions[index];
+              ),
+              const Divider(height: 1, color: Colors.grey), // 구분선 추가
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedAge = temporarySelectedAge; // 최종 선택 값 저장
+                  });
+                  Navigator.pop(context); // 창 닫기
                 },
-                children: ageOptions.map((age) => Text('$age세')).toList(),
-              ),
-            ),
-            const Divider(height: 1, color: Colors.grey), // 구분선 추가
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedAge = temporarySelectedAge; // 최종 선택 값 저장
-                });
-                Navigator.pop(context); // 창 닫기
-              },
-              child: Container(
-                width: double.infinity, // 버튼을 화면 전체로 확장
-                color: Colors.white, // 배경색 흰색 설정
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                alignment: Alignment.center,
-                child: const Text(
-                  '확인',
-                  style: TextStyle(fontSize: 16, color: Colors.black), // 검은 글씨
+                child: Container(
+                  width: double.infinity, // 버튼을 화면 전체로 확장
+                  color: Colors.white, // 배경색 흰색 설정
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    '확인',
+                    style: TextStyle(fontSize: 16, color: Colors.black), // 검은 글씨
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showGenderPicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        String? temporarySelectedGender = selectedGender; // 임시 선택 값
+
+        return SizedBox(
+          height: 300,
+          child: Column(
+            children: [
+              Expanded(
+                child: CupertinoPicker(
+                  backgroundColor: Colors.white,
+                  itemExtent: 32.0,
+                  scrollController: FixedExtentScrollController(
+                    initialItem: selectedGender == 'male' ? 0 : 1,
+                  ),
+                  onSelectedItemChanged: (int index) {
+                    temporarySelectedGender = index == 0 ? 'male' : 'female';
+                  },
+                  children: const [
+                    Text('남성'),
+                    Text('여성'),
+                  ],
+                ),
+              ),
+              const Divider(height: 1, color: Colors.grey), // 구분선 추가
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedGender = temporarySelectedGender; // 최종 선택 값 저장
+                  });
+                  Navigator.pop(context); // 창 닫기
+                },
+                child: Container(
+                  width: double.infinity, // 버튼을 화면 전체로 확장
+                  color: Colors.white, // 배경색 흰색 설정
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    '확인',
+                    style: TextStyle(fontSize: 16, color: Colors.black), // 검은 글씨
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,68 +247,83 @@ void _showAgePicker() {
                   alignment: Alignment.center,
                   child: GestureDetector(
                     onTap: _showAgePicker,
-                    child: Container(
-                      width: 400,
-                      height: 60,
-                      alignment: Alignment.centerLeft,
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(4.0),
-                      ),
-                      child: Text(
-                        selectedAge != null ? '$selectedAge세' : '나이 선택',
-                        style: const TextStyle(fontSize: 16, color: Colors.black),
-                      ),
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 400,
+                          height: 60,
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 5.0), // 텍스트 살짝 내리기
+                            child: Text(
+                              selectedAge != null ? '$selectedAge세' : '',
+                              style: const TextStyle(fontSize: 18, color: Colors.black),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: 12,
+                          top: 3, // 라벨을 조금 더 위로 올리기
+                          child: Container(
+                            color: const Color(0xffF4F4FE), // 배경색
+                            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: const Text(
+                              '나이',
+                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                // 성별 선택
+                // 성별 선택 박스
                 Align(
                   alignment: Alignment.center,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "성별",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: RadioListTile<String>(
-                              title: const Text("남성"),
-                              value: "male",
-                              groupValue: selectedGender,
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedGender = value;
-                                });
-                              },
+                  child: GestureDetector(
+                    onTap: _showGenderPicker,
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 400,
+                          height: 60,
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            selectedGender != null
+                                ? (selectedGender == 'male' ? '남성' : '여성')
+                                : '',
+                            style: const TextStyle(fontSize: 18, color: Colors.black),
+                          ),
+                        ),
+                        Positioned(
+                          left: 12,
+                          top: 3, // 텍스트가 입력 필드와 겹치지 않도록 수정
+                          child: Container(
+                            color: const Color(0xffF4F4FE), // 배경색
+                            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: const Text(
+                              '성별 선택',
+                              style: TextStyle(fontSize: 12, color: Colors.grey),
                             ),
                           ),
-                          Expanded(
-                            child: RadioListTile<String>(
-                              title: const Text("여성"),
-                              value: "female",
-                              groupValue: selectedGender,
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedGender = value;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 // 회원가입 버튼
                 Align(
                   alignment: Alignment.center,
