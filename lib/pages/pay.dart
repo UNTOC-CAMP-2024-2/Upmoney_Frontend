@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_3/pages/graph.dart';
 
-
 class PayPage extends StatefulWidget {
   const PayPage({super.key});
 
@@ -12,7 +11,6 @@ class PayPage extends StatefulWidget {
 class _PayPageState extends State<PayPage> {
   String selectedOption = '식비';
   String imagePath = 'assets/images/meal.png';
-
 
   final Map<String, Map<String, dynamic>> dataOptions = {
     '식비': {
@@ -37,8 +35,18 @@ class _PayPageState extends State<PayPage> {
     },
   };
 
+  bool showGraphPage = false;
+
   @override
   Widget build(BuildContext context) {
+    if (showGraphPage) {
+      return GraphPage(onBack: () {
+        setState(() {
+          showGraphPage = false;
+        });
+      });
+    }
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -51,19 +59,19 @@ class _PayPageState extends State<PayPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(40, 20, 40, 0),
-                  child: Container(
+                  padding: const EdgeInsetsDirectional.fromSTEB(40, 20, 40, 0),
+                  child: SizedBox(
                     height: 328,
                     child: Stack(
                       children: [
                         Align(
-                          alignment: AlignmentDirectional(0, 0),
+                          alignment: const AlignmentDirectional(0, 0),
                           child: Container(
                             width: 313,
                             height: 328,
                             decoration: BoxDecoration(
-                              color: Color.fromRGBO(221, 227, 255, 1.0),
-                              boxShadow: [
+                              color: const Color.fromRGBO(221, 227, 255, 1.0),
+                              boxShadow: const [
                                 BoxShadow(
                                   blurRadius: 4,
                                   color: Color(0x33000000),
@@ -78,7 +86,7 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: AlignmentDirectional(0, -0.3),
+                          alignment: const AlignmentDirectional(0, -0.3),
                           child: Image.asset(
                             dataOptions[selectedOption]!['image'],
                             width: 180,
@@ -86,38 +94,42 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: AlignmentDirectional(0, -1),
+                          alignment: const AlignmentDirectional(0, -1),
                           child: Padding(
-                            padding:
-                                EdgeInsetsDirectional.fromSTEB(0, 15, 175, 0),
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                0, 15, 175, 0),
                             child: Container(
                               width: 106,
                               height: 30,
-                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
                               decoration: BoxDecoration(
-                                color: const Color.fromRGBO(221, 227, 255, 1.0), 
+                                color: const Color.fromRGBO(221, 227, 255, 1.0),
                                 borderRadius: BorderRadius.circular(1000),
                                 border: Border.all(
-                                  color: Color.fromRGBO(88, 134, 186, 1.0),
+                                  color:
+                                      const Color.fromRGBO(88, 134, 186, 1.0),
                                 ),
                               ),
                               child: DropdownButton(
                                 value: selectedOption,
                                 isExpanded: true,
-                                icon: Icon(Icons.arrow_drop_down_rounded, color: Color.fromRGBO(0, 26, 114, 1.0)),
-                                underline: SizedBox(),
-                                style: TextStyle(
+                                icon: const Icon(Icons.arrow_drop_down_rounded,
+                                    color: Color.fromRGBO(0, 26, 114, 1.0)),
+                                underline: const SizedBox(),
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                 ),
-                                dropdownColor: Color.fromRGBO(221, 227, 255, 1.0),
+                                dropdownColor:
+                                    const Color.fromRGBO(221, 227, 255, 1.0),
                                 items: dataOptions.keys.map((String option) {
                                   return DropdownMenuItem<String>(
                                     value: option,
                                     child: Text(
                                       option,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
@@ -125,7 +137,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   );
                                 }).toList(),
-                                onChanged: (String? newValue){
+                                onChanged: (String? newValue) {
                                   setState(() {
                                     selectedOption = newValue!;
                                   });
@@ -135,37 +147,27 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: AlignmentDirectional(0, 0.87),
-                          child: Container(
-                            width: 271,
-                            height: 72,
-                            decoration: BoxDecoration(
-                              color: Color.fromRGBO(234, 238, 255, 70),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: AlignmentDirectional(0, -1),
+                          alignment: const AlignmentDirectional(0, -1),
                           child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(250, 20, 0, 0),
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                250, 20, 0, 0),
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => GraphPage()),
-                                );
+                                setState(() {
+                                  showGraphPage = true;
+                                });
                               },
-                            child: Icon(
-                              Icons.navigate_next,
-                            ),
+                              child: const Icon(
+                                Icons.navigate_next,
+                              ),
                             ),
                           ),
                         ),
-                        Align(
+                        const Align(
                           alignment: AlignmentDirectional(0, 0.8),
                           child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(35, 0, 0, 0),
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(35, 0, 0, 0),
                             child: Text(
                               '에서 20대 남성보다\n         원 더 소비했어요 !',
                               textAlign: TextAlign.center,
@@ -178,13 +180,14 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: AlignmentDirectional(0, 0.65),
+                          alignment: const AlignmentDirectional(0, 0.65),
                           child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 150, 0),
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                0, 0, 150, 0),
                             child: Text(
                               dataOptions[selectedOption]!['text1'],
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Color.fromRGBO(236, 80, 93, 1.0),
                                 fontSize: 17,
                                 fontWeight: FontWeight.w600,
@@ -193,13 +196,14 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: AlignmentDirectional(0, 0.83),
+                          alignment: const AlignmentDirectional(0, 0.83),
                           child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 155, 0),
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                0, 0, 155, 0),
                             child: Text(
                               dataOptions[selectedOption]!['text2'],
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Color.fromRGBO(236, 80, 93, 1.0),
                                 fontSize: 17,
                                 fontWeight: FontWeight.w600,
@@ -211,7 +215,7 @@ class _PayPageState extends State<PayPage> {
                     ),
                   ),
                 ),
-                Align(
+                const Align(
                   alignment: AlignmentDirectional(0, 0),
                   child: Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 40, 215, 18),
@@ -227,19 +231,19 @@ class _PayPageState extends State<PayPage> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(40, 0, 40, 0),
-                  child: Container(
+                  padding: const EdgeInsetsDirectional.fromSTEB(40, 0, 40, 0),
+                  child: SizedBox(
                     height: 136,
                     child: Stack(
                       children: [
                         Align(
-                          alignment: AlignmentDirectional(0, 0),
+                          alignment: const AlignmentDirectional(0, 0),
                           child: Container(
                             width: 313,
                             height: 136,
                             decoration: BoxDecoration(
-                              color: Color(0xFFF3F5FF),
-                              boxShadow: [
+                              color: const Color(0xFFF3F5FF),
+                              boxShadow: const [
                                 BoxShadow(
                                   blurRadius: 4,
                                   color: Color(0x33000000),
@@ -253,10 +257,11 @@ class _PayPageState extends State<PayPage> {
                             ),
                           ),
                         ),
-                        Align(
+                        const Align(
                           alignment: AlignmentDirectional(0, -0.79),
                           child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 195, 0),
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(0, 0, 195, 0),
                             child: Text(
                               'UNTOC_MT',
                               style: TextStyle(
@@ -268,11 +273,11 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: AlignmentDirectional(0, 1),
+                          alignment: const AlignmentDirectional(0, 1),
                           child: Container(
                             width: 313,
                             height: 45,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(12),
@@ -283,10 +288,11 @@ class _PayPageState extends State<PayPage> {
                             ),
                           ),
                         ),
-                        Align(
+                        const Align(
                           alignment: AlignmentDirectional(0, -0.41),
                           child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(35, 0, 0, 0),
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(35, 0, 0, 0),
                             child: Text(
                               '45,000',
                               style: TextStyle(
@@ -298,10 +304,11 @@ class _PayPageState extends State<PayPage> {
                             ),
                           ),
                         ),
-                        Align(
+                        const Align(
                           alignment: AlignmentDirectional(0, -0.33),
                           child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(220, 0, 0, 0),
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(220, 0, 0, 0),
                             child: Text(
                               '원',
                               style: TextStyle(
@@ -312,10 +319,11 @@ class _PayPageState extends State<PayPage> {
                             ),
                           ),
                         ),
-                        Align(
+                        const Align(
                           alignment: AlignmentDirectional(0, 0.84),
                           child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 165, 0),
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(0, 0, 165, 0),
                             child: Text(
                               '여가, 취미',
                               style: TextStyle(
@@ -330,7 +338,7 @@ class _PayPageState extends State<PayPage> {
                     ),
                   ),
                 ),
-                Align(
+                const Align(
                   alignment: AlignmentDirectional(0, 0),
                   child: Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 40, 175, 18),
@@ -346,27 +354,28 @@ class _PayPageState extends State<PayPage> {
                   ),
                 ),
                 Align(
-                  alignment: AlignmentDirectional(0, 0),
+                  alignment: const AlignmentDirectional(0, 0),
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(40, 0, 10, 60),
-                          child: Container(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              40, 0, 10, 60),
+                          child: SizedBox(
                             width: 117,
                             height: 112,
                             child: Stack(
                               children: [
                                 Align(
-                                  alignment: AlignmentDirectional(0, 0),
+                                  alignment: const AlignmentDirectional(0, 0),
                                   child: Container(
                                     width: 117,
                                     height: 112,
                                     decoration: BoxDecoration(
-                                      color: Color(0xFF081F5C),
-                                      boxShadow: [
+                                      color: const Color(0xFF081F5C),
+                                      boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 4,
                                           color: Color(0x33000000),
@@ -381,11 +390,11 @@ class _PayPageState extends State<PayPage> {
                                   ),
                                 ),
                                 Align(
-                                  alignment: AlignmentDirectional(0, 1),
+                                  alignment: const AlignmentDirectional(0, 1),
                                   child: Container(
                                     width: 117,
                                     height: 38,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Color(0xCCFFFFFF),
                                       borderRadius: BorderRadius.only(
                                         bottomLeft: Radius.circular(12),
@@ -396,7 +405,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.69, -0.8),
                                   child: Text(
                                     'UNTOC',
@@ -407,7 +416,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.08, -0.2),
                                   child: Text(
                                     '20,000',
@@ -418,7 +427,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(0.9, -0.2),
                                   child: Text(
                                     '원',
@@ -429,12 +438,12 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.69, 0.79),
                                   child: Text(
                                     '유흥, 여가',
                                     style: TextStyle(
-                                      color: const Color.fromRGBO(118, 118, 118, 1.0),
+                                      color: Color.fromRGBO(118, 118, 118, 1.0),
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -445,20 +454,21 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(10, 0, 10, 60),
-                          child: Container(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              10, 0, 10, 60),
+                          child: SizedBox(
                             width: 117,
                             height: 112,
                             child: Stack(
                               children: [
                                 Align(
-                                  alignment: AlignmentDirectional(0, 0),
+                                  alignment: const AlignmentDirectional(0, 0),
                                   child: Container(
                                     width: 117,
                                     height: 112,
                                     decoration: BoxDecoration(
-                                      color: Color(0xFF081F5C),
-                                      boxShadow: [
+                                      color: const Color(0xFF081F5C),
+                                      boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 4,
                                           color: Color(0x33000000),
@@ -473,11 +483,11 @@ class _PayPageState extends State<PayPage> {
                                   ),
                                 ),
                                 Align(
-                                  alignment: AlignmentDirectional(0, 1),
+                                  alignment: const AlignmentDirectional(0, 1),
                                   child: Container(
                                     width: 117,
                                     height: 38,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Color(0xCCFFFFFF),
                                       borderRadius: BorderRadius.only(
                                         bottomLeft: Radius.circular(12),
@@ -488,7 +498,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.69, -0.8),
                                   child: Text(
                                     '부산대학교',
@@ -499,7 +509,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.08, -0.2),
                                   child: Text(
                                     '21,000',
@@ -508,10 +518,9 @@ class _PayPageState extends State<PayPage> {
                                       fontSize: 22,
                                       fontWeight: FontWeight.w600,
                                     ),
-
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(0.9, -0.2),
                                   child: Text(
                                     '원',
@@ -522,12 +531,12 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.69, 0.79),
                                   child: Text(
                                     '교육',
                                     style: TextStyle(
-                                      color: const Color.fromRGBO(118, 118, 118, 1.0),
+                                      color: Color.fromRGBO(118, 118, 118, 1.0),
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -538,20 +547,21 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(10, 0, 10, 60),
-                          child: Container(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              10, 0, 10, 60),
+                          child: SizedBox(
                             width: 117,
                             height: 112,
                             child: Stack(
                               children: [
                                 Align(
-                                  alignment: AlignmentDirectional(0, 0),
+                                  alignment: const AlignmentDirectional(0, 0),
                                   child: Container(
                                     width: 117,
                                     height: 112,
                                     decoration: BoxDecoration(
-                                      color: Color(0xFFEC505D),
-                                      boxShadow: [
+                                      color: const Color(0xFFEC505D),
+                                      boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 4,
                                           color: Color(0x33000000),
@@ -566,11 +576,11 @@ class _PayPageState extends State<PayPage> {
                                   ),
                                 ),
                                 Align(
-                                  alignment: AlignmentDirectional(0, 1),
+                                  alignment: const AlignmentDirectional(0, 1),
                                   child: Container(
                                     width: 117,
                                     height: 38,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Color(0xCCFFFFFF),
                                       borderRadius: BorderRadius.only(
                                         bottomLeft: Radius.circular(12),
@@ -581,7 +591,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.69, -0.8),
                                   child: Text(
                                     'UNTOC',
@@ -592,7 +602,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.08, -0.2),
                                   child: Text(
                                     '20,000',
@@ -603,7 +613,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(0.9, -0.2),
                                   child: Text(
                                     '원',
@@ -614,12 +624,12 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.69, 0.79),
                                   child: Text(
                                     '유흥, 여가',
                                     style: TextStyle(
-                                      color: const Color.fromRGBO(118, 118, 118, 1.0),
+                                      color: Color.fromRGBO(118, 118, 118, 1.0),
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -630,20 +640,21 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(10, 0, 10, 60),
-                          child: Container(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              10, 0, 10, 60),
+                          child: SizedBox(
                             width: 117,
                             height: 112,
                             child: Stack(
                               children: [
                                 Align(
-                                  alignment: AlignmentDirectional(0, 0),
+                                  alignment: const AlignmentDirectional(0, 0),
                                   child: Container(
                                     width: 117,
                                     height: 112,
                                     decoration: BoxDecoration(
-                                      color: Color(0xFF081F5C),
-                                      boxShadow: [
+                                      color: const Color(0xFF081F5C),
+                                      boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 4,
                                           color: Color(0x33000000),
@@ -658,11 +669,11 @@ class _PayPageState extends State<PayPage> {
                                   ),
                                 ),
                                 Align(
-                                  alignment: AlignmentDirectional(0, 1),
+                                  alignment: const AlignmentDirectional(0, 1),
                                   child: Container(
                                     width: 117,
                                     height: 38,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Color(0xCCFFFFFF),
                                       borderRadius: BorderRadius.only(
                                         bottomLeft: Radius.circular(12),
@@ -673,7 +684,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.69, -0.8),
                                   child: Text(
                                     'UNTOC',
@@ -684,7 +695,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.08, -0.2),
                                   child: Text(
                                     '20,000',
@@ -695,7 +706,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(0.9, -0.2),
                                   child: Text(
                                     '원',
@@ -706,12 +717,12 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.69, 0.79),
                                   child: Text(
                                     '유흥, 여가',
                                     style: TextStyle(
-                                      color: const Color.fromRGBO(118, 118, 118, 1.0),
+                                      color: Color.fromRGBO(118, 118, 118, 1.0),
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -722,20 +733,21 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(10, 0, 40, 60),
-                          child: Container(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              10, 0, 40, 60),
+                          child: SizedBox(
                             width: 117,
                             height: 112,
                             child: Stack(
                               children: [
                                 Align(
-                                  alignment: AlignmentDirectional(0, 0),
+                                  alignment: const AlignmentDirectional(0, 0),
                                   child: Container(
                                     width: 117,
                                     height: 112,
                                     decoration: BoxDecoration(
-                                      color: Color(0xFF081F5C),
-                                      boxShadow: [
+                                      color: const Color(0xFF081F5C),
+                                      boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 4,
                                           color: Color(0x33000000),
@@ -750,11 +762,11 @@ class _PayPageState extends State<PayPage> {
                                   ),
                                 ),
                                 Align(
-                                  alignment: AlignmentDirectional(0, 1),
+                                  alignment: const AlignmentDirectional(0, 1),
                                   child: Container(
                                     width: 117,
                                     height: 38,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Color(0xCCFFFFFF),
                                       borderRadius: BorderRadius.only(
                                         bottomLeft: Radius.circular(12),
@@ -765,7 +777,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.69, -0.8),
                                   child: Text(
                                     'UNTOC',
@@ -776,7 +788,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.08, -0.2),
                                   child: Text(
                                     '20,000',
@@ -787,7 +799,7 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(0.9, -0.2),
                                   child: Text(
                                     '원',
@@ -798,12 +810,12 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                Align(
+                                const Align(
                                   alignment: AlignmentDirectional(-0.69, 0.79),
                                   child: Text(
                                     '유흥, 여가',
                                     style: TextStyle(
-                                      color: const Color.fromRGBO(118, 118, 118, 1.0),
+                                      color: Color.fromRGBO(118, 118, 118, 1.0),
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                     ),
