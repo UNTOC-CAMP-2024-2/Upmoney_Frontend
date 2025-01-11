@@ -71,7 +71,8 @@ class _NavigationState extends State<Navigation> {
         ),
       ),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFFF),
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.white,
         elevation: 0,
         title: Row(
           children: [
