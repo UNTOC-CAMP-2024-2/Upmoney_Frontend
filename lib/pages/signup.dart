@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/cupertino.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -13,8 +14,9 @@ class _SignUpPageState extends State<SignUpPage> {
   final idController = TextEditingController();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-  final ageController = TextEditingController();
   String? selectedGender; // 선택된 성별
+  int? selectedAge; // 선택된 나이
+  final List<int> ageOptions = List<int>.generate(100, (index) => index + 1); // 1~100세
 
   Future<void> signUp() async {
     final url = Uri.parse('http://127.0.0.1:8000/auth/signup');
@@ -26,7 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
           'username': idController.text.trim(),
           'name': usernameController.text.trim(),
           'hashed_password': passwordController.text.trim(),
-          'age': int.tryParse(ageController.text.trim()) ?? 0,
+          'age': selectedAge ?? 0, // 선택된 나이 전달
           'gender': selectedGender, // 선택된 성별 전달
         }),
       );
@@ -73,6 +75,27 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showAgePicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 250,
+          child: CupertinoPicker(
+            backgroundColor: Colors.white,
+            itemExtent: 32.0,
+            onSelectedItemChanged: (int index) {
+              setState(() {
+                selectedAge = ageOptions[index];
+              });
+            },
+            children: ageOptions.map((age) => Text('$age세')).toList(),
+          ),
+        );
+      },
     );
   }
 
@@ -138,24 +161,25 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                //나이
+
+                // 나이 선택 (CupertinoPicker)
                 Align(
                   alignment: Alignment.center,
                   child: SizedBox(
                     width: 400,
                     height: 60,
-                    child: TextField(
-                      controller: ageController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: "나이",
-                        border: OutlineInputBorder(),
+                    child: OutlinedButton(
+                      onPressed: _showAgePicker,
+                      child: Text(
+                        selectedAge != null ? '$selectedAge세' : '나이 선택',
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                //성별
+
+                // 성별 선택
                 Align(
                   alignment: Alignment.center,
                   child: Column(
@@ -198,6 +222,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
+
+                // 회원가입 버튼
                 Align(
                   alignment: Alignment.center,
                   child: SizedBox(
@@ -208,7 +234,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         if (idController.text.isEmpty ||
                             usernameController.text.isEmpty ||
                             passwordController.text.isEmpty ||
-                            selectedGender == null) {
+                            selectedGender == null ||
+                            selectedAge == null) {
                           _showErrorDialog('모든 필드를 채워주세요.');
                         } else {
                           signUp();
