@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+
 class GraphPage extends StatefulWidget {
   const GraphPage({super.key});
 
@@ -11,8 +12,10 @@ class GraphPage extends StatefulWidget {
 class _GraphPageState extends State<GraphPage> {
   @override
   Widget build(BuildContext context) {
+    // 각 항목의 금액 정의 (6개 항목)
     final amounts = [2300000.0, 20000.0, 21000.0, 50000.0, 2200000.0, 70000.0];
-    final total = amounts.reduce((a, b) => a + b);
+    final total = amounts.reduce((a, b) => a + b); // 총액 계산
+    // 각 금액의 비율을 계산하여 percentages 리스트 생성
     final percentages =
         amounts.map((amount) => (amount / total) * 100).toList();
 
@@ -24,29 +27,15 @@ class _GraphPageState extends State<GraphPage> {
           backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: false,
-          title: Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back),
-                color: const Color.fromARGB(218, 13, 40, 121),
-                iconSize: 30,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+          title: const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'UPmoney',
+              style: TextStyle(
+                color: Color.fromARGB(218, 13, 40, 121),
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(width: 10),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '',
-                  style: TextStyle(
-                    color: Color.fromARGB(218, 13, 40, 121),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
         body: SingleChildScrollView(
@@ -58,12 +47,12 @@ class _GraphPageState extends State<GraphPage> {
                 child: DonutChart(
                   percentages: percentages,
                   colors: const [
-                    Color(0xFFED6D4A),
-                    Color(0xFF9FC3B2),
-                    Color(0xFFF9CF64),
-                    Color(0xFFF5F1E0),
-                    Color(0xFFD9E9A3),
-                    Color(0xFFA1CA7A),
+                    Color.fromARGB(255, 21, 47, 78), // 등록금
+                    Color.fromARGB(255, 0, 0, 128), // 취미, 여가
+                    Colors.yellowAccent, // 교육
+                    Colors.pinkAccent, // 저축
+                    Colors.greenAccent, // 교통
+                    Colors.orangeAccent, // 기타
                   ],
                 ),
               ),
@@ -74,47 +63,41 @@ class _GraphPageState extends State<GraphPage> {
                 indent: 32,
                 endIndent: 32,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          LegendItem(
-                            color: const Color(0xFFED6D4A),
-                            title: '등록금',
-                            amount: amounts[0].toStringAsFixed(0),
-                          ),
-                          LegendItem(
-                            color: const Color(0xFF9FC3B2),
-                            title: '취미, 여가',
-                            amount: amounts[1].toStringAsFixed(0),
-                          ),
-                          LegendItem(
-                            color: const Color(0xFFF9CF64),
-                            title: '교육',
-                            amount: amounts[2].toStringAsFixed(0),
-                          ),
-                          LegendItem(
-                            color: const Color(0xFFF5F1E0),
-                            title: '저축',
-                            amount: amounts[3].toStringAsFixed(0),
-                          ),
-                          LegendItem(
-                            color: const Color(0xFFD9E9A3),
-                            title: '교통',
-                            amount: amounts[4].toStringAsFixed(0),
-                          ),
-                          LegendItem(
-                            color: const Color(0xFFA1CA7A),
-                            title: '기타',
-                            amount: amounts[5].toStringAsFixed(0),
-                          ),
-                        ],
-                      ),
+                    LegendItem(
+                      color: const Color.fromARGB(255, 21, 47, 78),
+                      title: '등록금',
+                      amount: '${amounts[0].toStringAsFixed(0)}원',
+                    ),
+                    LegendItem(
+                      color: const Color.fromARGB(255, 0, 0, 128),
+                      title: '취미, 여가',
+                      amount: '${amounts[1].toStringAsFixed(0)}원',
+                    ),
+                    LegendItem(
+                      color: Colors.yellowAccent,
+                      title: '교육',
+                      amount: '${amounts[2].toStringAsFixed(0)}원',
+                    ),
+                    LegendItem(
+                      color: Colors.greenAccent,
+                      title: '교통',
+                      amount: '${amounts[3].toStringAsFixed(0)}원',
+                    ),
+                    LegendItem(
+                      color: Colors.pinkAccent,
+                      title: '저축',
+                      amount: '${amounts[4].toStringAsFixed(0)}원',
+                    ),
+                    LegendItem(
+                      color: Colors.orangeAccent,
+                      title: '기타',
+                      amount: '${amounts[5].toStringAsFixed(0)}원',
                     ),
                   ],
                 ),
@@ -179,7 +162,7 @@ class DonutChartPainter extends CustomPainter {
     paint.style = PaintingStyle.fill;
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
-      size.width / 3.0,
+      size.width / 3.5,
       paint,
     );
   }
@@ -204,53 +187,38 @@ class LegendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formattedAmount = amount.replaceAllMapped(
-        RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
-
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Color.fromARGB(255, 94, 94, 94),
+          Row(
+            children: [
+              Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                ),
               ),
-            ),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500, // 세미볼드 적용
+                  color: Color.fromARGB(255, 94, 94, 94),
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: Column(
-              children: [
-                Text(
-                  formattedAmount,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 21,
-                    fontWeight: FontWeight.w600,
-                    color: Color.fromARGB(255, 94, 94, 94),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 0.5),
-                  height: 2,
-                  width: formattedAmount.length * 10.0,
-                  color: const Color.fromARGB(255, 94, 94, 94),
-                ),
-              ],
+          Text(
+            amount,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500, // 세미볼드 적용
+              color: Color.fromARGB(255, 94, 94, 94),
             ),
           ),
         ],
