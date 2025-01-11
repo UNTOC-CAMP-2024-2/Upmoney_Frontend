@@ -17,15 +17,15 @@ class _SignUpPageState extends State<SignUpPage> {
   String? selectedGender; // 선택된 성별
 
   Future<void> signUp() async {
-    final url = Uri.parse('http://your-backend-url/register');
+    final url = Uri.parse('http://127.0.0.1:8000/auth/signup');
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          'userid': idController.text.trim(),
-          'username': usernameController.text.trim(),
-          'password': passwordController.text.trim(),
+          'username': idController.text.trim(),
+          'name': usernameController.text.trim(),
+          'hashed_password': passwordController.text.trim(),
           'age': int.tryParse(ageController.text.trim()) ?? 0,
           'gender': selectedGender, // 선택된 성별 전달
         }),
