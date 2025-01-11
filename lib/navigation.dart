@@ -19,7 +19,7 @@ class _NavigationState extends State<Navigation> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationBarTheme(
-        data: NavigationBarThemeData( 
+        data: NavigationBarThemeData(
           backgroundColor: const Color(0xFF081F5C),
           labelTextStyle: WidgetStateProperty.all(
             const TextStyle(color: Colors.white),
