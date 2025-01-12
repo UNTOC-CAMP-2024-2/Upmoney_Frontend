@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_application_3/pages/household.dart';
 import 'pages/pay.dart';
 import 'pages/household.dart';
 import 'pages/scholarship.dart';
@@ -36,16 +36,31 @@ class _NavigationState extends State<Navigation> {
         ),
         child: NavigationBar(
           selectedIndex: selectIndex,
-          onDestinationSelected: (value) => setState(() {
-            if (value == 2) {
-              showDialog(
+          onDestinationSelected: (value) async {
+            if (value == 2) { // "+" 아이콘 클릭 시
+              final newEntry = await showDialog<Map<String, String>?>(
                 context: context,
                 builder: (context) => const CustomDialog(),
               );
+
+              if (newEntry != null && (newEntry['type'] == 'income' || newEntry['type'] == 'consumption')) {
+                setState(() {
+                  DateTime today = DateTime.now();
+                  today = DateTime(today.year, today.month, today.day);
+                  if (!HouseholdPageState.entries[today]!.any((entry) =>
+                    entry['type'] == newEntry['type'] &&
+                    entry['title'] == newEntry['title'] &&
+                    entry['amount'] == newEntry['amount'])) {
+                  HouseholdPageState.entries[today]?.add(newEntry);
+                }
+                });
+              }
             } else {
-              selectIndex = value;
+              setState(() {
+                selectIndex = value;
+              });
             }
-          }),
+          },
           destinations: const [
             NavigationDestination(
               icon: Icon(Icons.attach_money_rounded, size: 40),
@@ -390,7 +405,7 @@ class _CustomDialogState extends State<CustomDialog> {
                   alignment: AlignmentDirectional(1, 1),
                   child: Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(
-                      10, 100, 5, 0),
+                      10, 100, 5, 0),                      
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
@@ -400,8 +415,56 @@ class _CustomDialogState extends State<CustomDialog> {
                           )
                         ),
                         onPressed: () {
-                          Navigator.pop(context);
-                        }, 
+                          // 소득/소비 선택 여부 확인
+                          if (selectedButton == null || (selectedButton != 'income' && selectedButton != 'consumption')) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('소득 또는 소비를 선택해주세요!'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return; // 다이얼로그 닫지 않음
+                          }
+
+                          // 제목과 금액 입력 여부 확인
+                          if (_textController2.text.isEmpty || _textController.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('제목과 금액을 모두 입력해주세요!'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return; // 다이얼로그 닫지 않음
+                          }
+
+                          // 데이터 저장 로직
+                          DateTime today = DateTime.now();
+                          today = DateTime(today.year, today.month, today.day); // 시간 제거
+
+                          if (!HouseholdPageState.entries.containsKey(today)) {
+                            HouseholdPageState.entries[today] = [];
+                          }
+
+                          // 중복 데이터 확인
+                          if (!HouseholdPageState.entries[today]!.any((entry) =>
+                              entry['type'] == selectedButton &&
+                              entry['title'] == _textController2.text &&
+                              entry['amount'] == _textController.text)) {
+                            HouseholdPageState.entries[today]?.add({
+                              'type': selectedButton!,
+                              'title': _textController2.text,
+                              'amount': _textController.text,
+                            });
+                          }
+
+                          // 다이얼로그 닫기
+                          Navigator.pop(context, {
+                            'type': selectedButton!,
+                            'title': _textController2.text,
+                            'amount': _textController.text,
+                          });
+
+                        },
                         child: Text(
                           '확인',
                           style: TextStyle(
@@ -449,5 +512,4 @@ class _CustomDialogState extends State<CustomDialog> {
       ),
     );
   }
-}// ddddkdkd
-
+}
