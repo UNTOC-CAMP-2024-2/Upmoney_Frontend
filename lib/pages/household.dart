@@ -220,18 +220,15 @@ class HouseholdPageState extends State<HouseholdPage> {
   final DateTime todayDateOnly = DateTime(today.year, today.month, today.day);
   final DateTime selectedDayOnly = DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
 
-  final Duration difference = selectedDay.difference(todayDateOnly);
-
-  if (difference.inDays == 0) {
+  // 정확히 날짜만 비교
+  if (selectedDayOnly == todayDateOnly) {
     return 'Today';
-  } else if (difference.inDays == -1) {
-    return 'D-1';
-  } else if (difference.inDays == 1) {
-    return 'D+1'; 
-  } else if (difference.inDays < 0) {
-    return 'D${difference.inDays}'; 
+  } else if (selectedDayOnly.isBefore(todayDateOnly)) {
+    final int daysDiff = todayDateOnly.difference(selectedDayOnly).inDays;
+    return 'D-${daysDiff}';
   } else {
-    return 'D+${difference.inDays}';
-    }
+    final int daysDiff = selectedDayOnly.difference(todayDateOnly).inDays;
+    return 'D+${daysDiff}';
   }
+}
 }

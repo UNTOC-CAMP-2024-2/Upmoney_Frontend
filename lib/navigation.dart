@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_3/pages/household.dart';
 import 'pages/pay.dart';
@@ -14,6 +15,7 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> {
   int selectIndex = 0;
+
 
 
   @override
@@ -124,10 +126,10 @@ class CustomDialog extends StatefulWidget {
 }
 
 class _CustomDialogState extends State<CustomDialog> {
-  final TextEditingController _textController = TextEditingController();
-  final TextEditingController _textController2 = TextEditingController();
-  final FocusNode _textFieldFocusNode = FocusNode();
-  final FocusNode _textFieldFocusNode2 = FocusNode();
+  final TextEditingController amount = TextEditingController();
+  final TextEditingController description = TextEditingController();
+  final FocusNode amountFocusNode = FocusNode();
+  final FocusNode descriptionFocusNode2 = FocusNode();
   bool checkboxValue1 = false;
   bool checkboxValue2 = false;
   bool checkboxValue3 = false;
@@ -135,11 +137,19 @@ class _CustomDialogState extends State<CustomDialog> {
   bool checkboxValue5 = false;
   bool checkboxValue6 = false;
   String? selectedButton;
+  int category = 0;
+
+  
+
+
+
+
+
 
   @override
   void dispose() {
-    _textController.dispose();
-    _textFieldFocusNode.dispose();
+    amount.dispose();
+    amountFocusNode.dispose();
     super.dispose();
   }
 
@@ -273,8 +283,8 @@ class _CustomDialogState extends State<CustomDialog> {
                             child: SizedBox(
                               width: 200,
                               child: TextFormField(
-                                controller: _textController2,
-                                focusNode: _textFieldFocusNode2,
+                                controller: description,
+                                focusNode: descriptionFocusNode2,
                                 autofocus: false,
                                 obscureText: false,
                                 decoration: InputDecoration(
@@ -316,8 +326,8 @@ class _CustomDialogState extends State<CustomDialog> {
                             child: SizedBox(
                               width: 130,
                               child: TextFormField(
-                                controller: _textController,
-                                focusNode: _textFieldFocusNode,
+                                controller: amount,
+                                focusNode: amountFocusNode,
                                 autofocus: false,
                                 keyboardType: TextInputType.number,
                                 obscureText: false,
@@ -380,26 +390,44 @@ class _CustomDialogState extends State<CustomDialog> {
                 _buildCheckboxWithText(-0.86, 0.25, checkboxValue1, '식비',
                     (newValue) {
                   setState(() => checkboxValue1 = newValue!);
+                  if (checkboxValue1) {
+                    category = 1;
+                  }
                 }),
                 _buildCheckboxWithText(-0.86, 0.50, checkboxValue2, '교육',
                     (newValue) {
                   setState(() => checkboxValue2 = newValue!);
+                  if (checkboxValue2) {
+                    category = 2;
+                  }
                 }),
                 _buildCheckboxWithText(-0.86, 0.78, checkboxValue3, '저축',
                     (newValue) {
                   setState(() => checkboxValue3 = newValue!);
+                  if (checkboxValue3) {
+                    category = 3;
+                  }
                 }),
                 _buildCheckboxWithText(0.23, 0.25, checkboxValue4, '취미, 여가',
                     (newValue) {
                   setState(() => checkboxValue4 = newValue!);
+                  if (checkboxValue4) {
+                    category = 4;
+                  }
                 }),
                 _buildCheckboxWithText(0.03, 0.50, checkboxValue5, '교통',
                     (newValue) {
                   setState(() => checkboxValue5 = newValue!);
+                  if (checkboxValue5) {
+                    category = 5;
+                  }
                 }),
                 _buildCheckboxWithText(0.03, 0.78, checkboxValue6, '기타', 
                     (newValue) {
                   setState(() => checkboxValue6 = newValue!);
+                  if (checkboxValue6) {
+                    category = 6;
+                  }
                 }),
                 Align(
                   alignment: AlignmentDirectional(1, 1),
@@ -427,7 +455,7 @@ class _CustomDialogState extends State<CustomDialog> {
                           }
 
                           // 제목과 금액 입력 여부 확인
-                          if (_textController2.text.isEmpty || _textController.text.isEmpty) {
+                          if (description.text.isEmpty || amount.text.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('제목과 금액을 모두 입력해주세요!'),
@@ -436,7 +464,9 @@ class _CustomDialogState extends State<CustomDialog> {
                             );
                             return; // 다이얼로그 닫지 않음
                           }
-
+                          if (selectedButton == 'income') {
+                            category = 0;
+                          } 
                           // 데이터 저장 로직
                           DateTime today = DateTime.now();
                           today = DateTime(today.year, today.month, today.day); // 시간 제거
@@ -448,22 +478,20 @@ class _CustomDialogState extends State<CustomDialog> {
                           // 중복 데이터 확인
                           if (!HouseholdPageState.entries[today]!.any((entry) =>
                               entry['type'] == selectedButton &&
-                              entry['title'] == _textController2.text &&
-                              entry['amount'] == _textController.text)) {
+                              entry['title'] == description.text &&
+                              entry['amount'] == amount.text)) {
                             HouseholdPageState.entries[today]?.add({
                               'type': selectedButton!,
-                              'title': _textController2.text,
-                              'amount': _textController.text,
+                              'title': description.text,
+                              'amount': amount.text,
                             });
                           }
-
                           // 다이얼로그 닫기
                           Navigator.pop(context, {
                             'type': selectedButton!,
-                            'title': _textController2.text,
-                            'amount': _textController.text,
+                            'title': description.text,
+                            'amount': amount.text,
                           });
-
                         },
                         child: Text(
                           '확인',
