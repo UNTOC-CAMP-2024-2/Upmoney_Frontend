@@ -26,8 +26,7 @@ class Myapp extends StatelessWidget {
           ),
         ),
       ),
-
       home: const SplashScreen(),
     );
-  } 
+  }
 }
