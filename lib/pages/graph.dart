@@ -38,7 +38,7 @@ class _GraphPageState extends State<GraphPage> {
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'UPmoney',
+                  '',
                   style: TextStyle(
                     color: Color.fromARGB(218, 13, 40, 121),
                     fontWeight: FontWeight.bold,
@@ -82,33 +82,33 @@ class _GraphPageState extends State<GraphPage> {
                   children: [
                     LegendItem(
                       color: const Color(0xFFED6D4A),
-                      title: '등록금',
-                      amount: '${amounts[0].toStringAsFixed(0)}원',
+                      title: '식비',
+                      amount: formatWithCommas(amounts[0]),
                     ),
                     LegendItem(
                       color: const Color(0xFF9FC3B2),
                       title: '취미, 여가',
-                      amount: '${amounts[1].toStringAsFixed(0)}원',
+                      amount: formatWithCommas(amounts[1]),
                     ),
                     LegendItem(
                       color: const Color(0xFFF9CF64),
                       title: '교육',
-                      amount: '${amounts[2].toStringAsFixed(0)}원',
+                      amount: formatWithCommas(amounts[2]),
                     ),
                     LegendItem(
                       color: const Color(0xFFF5F1E0),
                       title: '저축',
-                      amount: '${amounts[3].toStringAsFixed(0)}원',
+                      amount: formatWithCommas(amounts[3]),
                     ),
                     LegendItem(
                       color: const Color(0xFFD9E9A3),
                       title: '교통',
-                      amount: '${amounts[4].toStringAsFixed(0)}원',
+                      amount: formatWithCommas(amounts[4]),
                     ),
                     LegendItem(
                       color: const Color(0xFFA1CA7A),
                       title: '기타',
-                      amount: '${amounts[5].toStringAsFixed(0)}원',
+                      amount: formatWithCommas(amounts[5]),
                     ),
                   ],
                 ),
@@ -119,9 +119,15 @@ class _GraphPageState extends State<GraphPage> {
       ),
     );
   }
-}
 
-// 기존 DonutChart, DonutChartPainter, LegendItem 클래스는 그대로 유지
+  String formatWithCommas(double value) {
+    final parts = value.toStringAsFixed(0).split('');
+    for (int i = parts.length - 3; i > 0; i -= 3) {
+      parts.insert(i, ',');
+    }
+    return '${parts.join()}원';
+  }
+}
 
 class DonutChart extends StatelessWidget {
   final List<double> percentages;
@@ -201,37 +207,62 @@ class LegendItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 12), // 간격 조정
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 20.4, // 기존 12 * 1.7
-                height: 20.4, // 기존 12 * 1.7
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500, // 세미볼드 적용
-                  color: Color.fromARGB(255, 94, 94, 94),
-                ),
-              ),
-            ],
+          // 왼쪽 원 (왼쪽 정렬)
+          Container(
+            width: 24, // 원 크기 증가
+            height: 24,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
           ),
-          Text(
-            amount,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500, // 세미볼드 적용
-              color: Color.fromARGB(255, 94, 94, 94),
+          const SizedBox(width: 12), // 원과 텍스트 사이 간격 증가
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // 제목 (가운데 정렬)
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18, // 제목 크기
+                        fontWeight: FontWeight.bold, // 세미볼드
+                        color: Color(0xFF767676), // 텍스트 색상 변경
+                      ),
+                    ),
+                  ),
+                ),
+                // 금액 (가운데 정렬, 강조)
+                Expanded(
+                  child: Center(
+                    child: RichText(
+                      text: TextSpan(
+                        text: amount.split('원')[0], // 숫자 부분
+                        style: const TextStyle(
+                          fontSize: 22, // 금액 숫자 크기 더 증가
+                          fontWeight: FontWeight.bold, // 굵게
+                          color: Color(0xFF767676), // 텍스트 색상 변경
+                        ),
+                        children: const [
+                          TextSpan(
+                            text: ' 원', // "원" 텍스트
+                            style: TextStyle(
+                              fontSize: 18, // "원"의 크기 조정
+                              fontWeight: FontWeight.w400, // 일반 굵기
+                              color: Color(0xFF767676), // 텍스트 색상 변경
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
