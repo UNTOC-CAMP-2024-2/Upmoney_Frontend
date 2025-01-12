@@ -19,7 +19,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final List<int> ageOptions = List<int>.generate(100, (index) => index + 1); // 1~100세
 
   Future<void> signUp() async {
-    final url = Uri.parse('http://127.0.0.1:8000/auth/signup');
+    final url = Uri.parse('http://34.47.105.208:8000/auth/signup');
     try {
       final response = await http.post(
         url,
