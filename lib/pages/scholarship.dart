@@ -20,11 +20,11 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
-        title: Row(
+        title: const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
-              children: const [
+              children: [
                 CategoryButton(label: 'PNU'),
                 CategoryButton(label: 'PNU_CSE'),
                 CategoryButton(label: '국가장학금'),
@@ -55,7 +55,8 @@ class HomePage extends StatelessWidget {
                   height: 80.0, // 항목 높이를 고정
                   decoration: BoxDecoration(
                     border: Border(
-                      bottom: BorderSide(color: Colors.grey.shade300, width: 1.0),
+                      bottom:
+                          BorderSide(color: Colors.grey.shade300, width: 1.0),
                     ),
                   ),
                   child: InkWell(
@@ -111,9 +112,20 @@ class CategoryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () {},
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue.shade700,
+          backgroundColor: const Color(0x00f4f4fe).withOpacity(0.9), // 배경색 유지
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // 타원형 버튼 유지
+            side: const BorderSide(
+              // 테두리 추가
+              color: Color(0xFF081F5C), // 테두리 색상
+              width: 1.0, // 테두리 두께
+            ),
+          ),
         ),
-        child: Text(label),
+        child: Text(
+          label,
+          style: const TextStyle(color: Colors.black), // 글자색 검은색
+        ),
       ),
     );
   }
