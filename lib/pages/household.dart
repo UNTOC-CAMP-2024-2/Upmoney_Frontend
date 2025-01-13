@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_3/navigation.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class HouseholdPage extends StatefulWidget {
   const HouseholdPage({super.key});
@@ -37,7 +41,18 @@ class HouseholdPageState extends State<HouseholdPage> {
               setState(() {
                 _selectedDay = selectedDay;
                 _focusedDay = focusedDay;
+               
               });
+
+              DateTime today = DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
+              setState(() {
+                if (!HouseholdPageState.entries.containsKey(today)) {
+                  HouseholdPageState.entries[today] = [];
+                }
+              });
+
+              _fetchDataForToday(today);
+
               _showCustomDialog(context, selectedDay);
             },
             rowHeight: 90,
@@ -107,9 +122,59 @@ class HouseholdPageState extends State<HouseholdPage> {
     ];
     return months[month-1];
   }
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('jwt_token');
+  }
+
+  Future<void> _fetchDataForToday(DateTime today) async {
+  final token = await getToken();
+  if (token == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('토큰이 없습니다. 다시 로그인하세요.'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return;
+  }
+
+  final formattedDate = '${today.year.toString().padLeft(4, '0')}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+  final url = Uri.parse('http://34.47.105.208:8000/dateconsumption/dateconsumption/$formattedDate').replace(
+    queryParameters: {
+      'token': token,
+    },
+  );
+  if (!HouseholdPageState.entries.containsKey(today)) {
+        HouseholdPageState.entries[today] = [];
+  }
+  try {
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        HouseholdPageState.entries[today] = List<Map<String, String>>.from(data.map((item) => {
+        'id': item['id'].toString(),
+        'amount': item['amount'].toString(),
+        'category': item['category'].toString(),
+        'description': item['description'].toString(), 
+        'created_at': item['created_at'].toString(), 
+        }));
+      });
+    } else {
+      print('Error: ${response.body}');
+    }
+  } catch (e) {
+    print('Network Error: $e');
+  }
+}
+
 
   void _showCustomDialog(BuildContext context, DateTime selectedDay) async {
     DateTime today = DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
+
+    await _fetchDataForToday(today);
     showDialog(
       context: context, 
       builder: (context) {
@@ -158,18 +223,14 @@ class HouseholdPageState extends State<HouseholdPage> {
                           endIndent: 10,
                           color: Colors.grey,
                         ),
-                        ...?entries[today]?.map((entry) => Container(
-                          decoration: BoxDecoration(
-                            color: entry['type'] == 'income'
-                            ? Colors.red
-                            : Colors.blue,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                        ...?HouseholdPageState.entries[today]?.map((entry) => Container(
+                          margin: EdgeInsets.symmetric(vertical: 5),
+                          padding: EdgeInsets.all(10),
                           child: Stack(
                             children: [
                               Padding(padding: EdgeInsetsDirectional.fromSTEB(50, 15, 0, 0),
                               child: Text(
-                                entry['type'] == 'income' ? '소득' : '소비',
+                                entry['description']!,
                                 style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w600,
@@ -183,7 +244,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                                   child: Container(
                                     width: 150,
                                     child: Text(
-                                      entry['amount']!,
+                                      '${entry['amount']!}원',
                                       style: TextStyle(
                                         fontSize: 17,
                                         fontWeight: FontWeight.w600,
@@ -192,16 +253,6 @@ class HouseholdPageState extends State<HouseholdPage> {
                                   ),
                                 ),
                               ),
-                              Align(
-                                alignment: AlignmentDirectional(0.8, 0),
-                                child: Text(
-                                  '원',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              )
                             ],
                           ),
                         ))
@@ -232,3 +283,4 @@ class HouseholdPageState extends State<HouseholdPage> {
   }
 }
 }
+

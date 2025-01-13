@@ -45,23 +45,11 @@ class _NavigationState extends State<Navigation> {
           selectedIndex: selectIndex,
           onDestinationSelected: (value) async {
             if (value == 2) { // "+" 아이콘 클릭 시
-              final newEntry = await showDialog<Map<String, String>?>(
+              showDialog(
                 context: context,
                 builder: (context) => const CustomDialog(),
               );
-
-              if (newEntry != null && (newEntry['type'] == 'income' || newEntry['type'] == 'consumption')) {
-                setState(() {
-                  DateTime today = DateTime.now();
-                  today = DateTime(today.year, today.month, today.day);
-                  if (!HouseholdPageState.entries[today]!.any((entry) =>
-                    entry['type'] == newEntry['type'] &&
-                    entry['title'] == newEntry['title'] &&
-                    entry['amount'] == newEntry['amount'])) {
-                  HouseholdPageState.entries[today]?.add(newEntry);
-                }
-                });
-              }
+              
             } else {
               setState(() {
                 selectIndex = value;
@@ -474,27 +462,7 @@ class _CustomDialogState extends State<CustomDialog> {
                           if (selectedButton == 'income') {
                             category = 0;
                           } 
-                          // 데이터 저장 로직
-                          DateTime today = DateTime.now();
-                          today = DateTime(today.year, today.month, today.day); // 시간 제거
-
-                          if (!HouseholdPageState.entries.containsKey(today)) {
-                            HouseholdPageState.entries[today] = [];
-                          }
-
-                          // 중복 데이터 확인
-                          if (!HouseholdPageState.entries[today]!.any((entry) =>
-                              entry['type'] == selectedButton &&
-                              entry['title'] == description.text &&
-                              entry['amount'] == amount.text)) {
-                            HouseholdPageState.entries[today]?.add({
-                              'type': selectedButton!,
-                              'title': description.text,
-                              'amount': amount.text,
-                            });
-                          }
-
-
+                        
                           final token = await getToken();
                           print('Retrieved Token: $token'); // null이면 저장 과정에서 문제가 있음
 
