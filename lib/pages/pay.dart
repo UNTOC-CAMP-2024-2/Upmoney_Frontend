@@ -142,7 +142,8 @@ class _PayPageState extends State<PayPage> {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+        final decodedData = utf8.decode(response.bodyBytes);
+        final List<dynamic> data = json.decode(decodedData);
         if (data.isNotEmpty) {
           setState(() {
             recentConsumption = data[0]; // 첫 번째 소비 데이터 사용
@@ -192,9 +193,14 @@ class _PayPageState extends State<PayPage> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: SafeArea(
-          top: true,
+        body: RefreshIndicator(
+        onRefresh: () async {
+          // 새로고침 시 데이터 갱신
+          await fetchDifference(dataOptions[selectedOption]!['classify_id']);
+          await fetchRecentConsumption();
+        },
           child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
