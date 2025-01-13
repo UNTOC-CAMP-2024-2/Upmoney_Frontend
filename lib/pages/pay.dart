@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_3/pages/graph.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PayPage extends StatefulWidget {
   const PayPage({super.key});
@@ -16,26 +19,164 @@ class _PayPageState extends State<PayPage> {
     '식비': {
       'text1': '식비',
       'text2': '1,000,000',
-      'image': 'assets/images/meal.png'
+      'image': 'assets/images/meal.png',
+      'classify_id': 1,
     },
-    '여가': {
-      'text1': '여가',
+    '교육': {
+      'text1': '교육',
       'text2': '2,000,000',
-      'image': 'assets/images/relax.png'
+      'image': 'assets/images/meal.png',
+      'classify_id': 2,
     },
     '쇼핑': {
       'text1': '쇼핑',
       'text2': '3,000,000',
-      'image': 'assets/images/shopping.png'
+      'image': 'assets/images/meal.png',
+      'classify_id': 3,
+    },
+    '여가': {
+      'text1': '여가',
+      'text2': '4,000,000',
+      'image': 'assets/images/relax.png',
+      'classify_id': 4,
     },
     '교통': {
       'text1': '교통',
-      'text2': '4,000,000',
-      'image': 'assets/images/vehicle.png'
+      'text2': '5,000,000',
+      'image': 'assets/images/meal.png',
+      'classify_id': 5,
+    },
+    '기타': {
+      'text1': '기타',
+      'text2': '6,000,000',
+      'image': 'assets/images/shopping.png',
+      'classify_id': 6,
     },
   };
 
   bool showGraphPage = false;
+
+  Future<String?> getToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('jwt_token');
+  }
+
+  Future<void> fetchDifference(int classifyId) async {
+    final token = await getToken();
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('토큰이 없습니다. 다시 로그인하세요.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final url = Uri.parse('http://34.47.105.208:8000/averageconsumption/difference').replace(
+                            queryParameters: {
+                              'token':token,
+                              'classify_id': '$classifyId',
+                            },
+                          );
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          // text2를 차이값으로 업데이트
+          dataOptions[selectedOption]!['text2'] = data['difference'].toString();
+        });
+      } else {
+        throw Exception('Failed to fetch data: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching difference: $e');
+    }
+  }
+
+
+
+  Map<String, dynamic>? recentConsumption;
+
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDifference(dataOptions[selectedOption]!['classify_id']);
+    fetchRecentConsumption(); // PayPage 시작 시 최근 소비 데이터 가져오기
+  }
+
+  Future<void> fetchRecentConsumption() async {
+    final token = await getToken();
+    print('Retrieved Token: $token'); // null이면 저장 과정에서 문제가 있음
+
+    if (token == null) {
+     ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('토큰이 없습니다. 다시 로그인하세요.'),
+        backgroundColor: Colors.red,
+      ),
+     );
+     return;
+    }
+
+    final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption/recent').replace(
+                            queryParameters: {
+                              'token':token,
+                            },
+                          );
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+        'Content-Type': 'application/json',
+      },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        if (data.isNotEmpty) {
+          setState(() {
+            recentConsumption = data[0]; // 첫 번째 소비 데이터 사용
+          });
+        }
+      } else {
+        throw Exception('Failed to fetch data: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching recent consumption: $e');
+    }
+  }
+
+  String mapCategoryToOption(int category) {
+    // 카테고리 숫자를 문자열로 매핑
+    switch (category) {
+      case 0:
+        return '소득';
+      case 1:
+        return '식비';
+      case 2:
+        return '교육';
+      case 3:
+        return '저축';
+      case 4:
+        return '취미,여가';
+      case 5:
+        return '교통';
+      case 6:
+        return '기타';
+      default:
+        return '카테고리안옴';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -257,14 +398,16 @@ class _PayPageState extends State<PayPage> {
                             ),
                           ),
                         ),
-                        const Align(
-                          alignment: AlignmentDirectional(0, -0.79),
+                        Align(
+                          alignment: const AlignmentDirectional(0, -0.79),
                           child: Padding(
                             padding:
-                                EdgeInsetsDirectional.fromSTEB(0, 0, 195, 0),
+                                const EdgeInsetsDirectional.fromSTEB(0, 0, 195, 0),
                             child: Text(
-                              'UNTOC_MT',
-                              style: TextStyle(
+                              recentConsumption != null
+                                  ? recentConsumption!['description']
+                                  : '데이터 없음',
+                              style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
@@ -288,14 +431,16 @@ class _PayPageState extends State<PayPage> {
                             ),
                           ),
                         ),
-                        const Align(
-                          alignment: AlignmentDirectional(0, -0.41),
+                        Align(
+                          alignment: const AlignmentDirectional(0, -0.41),
                           child: Padding(
                             padding:
-                                EdgeInsetsDirectional.fromSTEB(35, 0, 0, 0),
+                                const EdgeInsetsDirectional.fromSTEB(35, 0, 0, 0),
                             child: Text(
-                              '45,000',
-                              style: TextStyle(
+                              recentConsumption != null
+                                  ? '${recentConsumption!['amount']}'
+                                  : '0',
+                              style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 34,
                                 fontWeight: FontWeight.w600,
@@ -319,14 +464,16 @@ class _PayPageState extends State<PayPage> {
                             ),
                           ),
                         ),
-                        const Align(
-                          alignment: AlignmentDirectional(0, 0.84),
+                        Align(
+                          alignment: const AlignmentDirectional(0, 0.84),
                           child: Padding(
                             padding:
-                                EdgeInsetsDirectional.fromSTEB(0, 0, 165, 0),
+                                const EdgeInsetsDirectional.fromSTEB(0, 0, 165, 0),
                             child: Text(
-                              '여가, 취미',
-                              style: TextStyle(
+                              recentConsumption != null
+                                  ? mapCategoryToOption(recentConsumption!['category'])
+                                  : '카테고리 없음',
+                              style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 22,
                                 fontWeight: FontWeight.w600,
