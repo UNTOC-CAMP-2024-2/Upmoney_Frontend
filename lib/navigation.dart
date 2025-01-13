@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_3/pages/household.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'pages/pay.dart';
 import 'pages/household.dart';
 import 'pages/scholarship.dart';
 import 'pages/my.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -140,8 +145,10 @@ class _CustomDialogState extends State<CustomDialog> {
   int category = 0;
 
   
-
-
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('jwt_token');
+  }
 
 
 
@@ -442,7 +449,7 @@ class _CustomDialogState extends State<CustomDialog> {
                             borderRadius: BorderRadius.all(Radius.circular(4)),
                           )
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           // 소득/소비 선택 여부 확인
                           if (selectedButton == null || (selectedButton != 'income' && selectedButton != 'consumption')) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -486,12 +493,73 @@ class _CustomDialogState extends State<CustomDialog> {
                               'amount': amount.text,
                             });
                           }
+
+
+                          final token = await getToken();
+                          print('Retrieved Token: $token'); // null이면 저장 과정에서 문제가 있음
+
+                          if (token == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('토큰이 없습니다. 다시 로그인하세요.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+                          final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption').replace(
+                            queryParameters: {
+                              'token':token,
+                            },
+                          );
+
+                          final headers = {
+                            'Content-Type': 'application/json',
+                          };
+
+                          final body = json.encode({
+                            'description': description.text.trim(),
+                            'amount': int.tryParse(amount.text) ?? 0,
+                            'category': category,
+                          });
+
+                          try {
+                            final response = await http.post(url, headers: headers, body: body);
+
+                            if (response.statusCode == 200) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('데이터가 성공적으로 저장되었습니다!'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            } else {
+                              print('Error: ${response.body}');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('서버 오류가 발생했습니다: ${response.body}'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            print('Network Error: $e');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('네트워크 오류가 발생했습니다.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                           // 다이얼로그 닫기
                           Navigator.pop(context, {
                             'type': selectedButton!,
                             'title': description.text,
                             'amount': amount.text,
                           });
+
+                          
+
                         },
                         child: Text(
                           '확인',

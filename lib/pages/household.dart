@@ -169,7 +169,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                             children: [
                               Padding(padding: EdgeInsetsDirectional.fromSTEB(50, 15, 0, 0),
                               child: Text(
-                                entry['title']!,
+                                entry['type'] == 'income' ? '소득' : '소비',
                                 style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w600,
