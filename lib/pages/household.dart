@@ -19,6 +19,7 @@ class HouseholdPageState extends State<HouseholdPage> {
   DateTime _focusedDay = DateTime.now();
   static Map<DateTime, List<Map<String, String>>> entries = {};
   Map<DateTime, TextEditingController> _amountControllers = {};
+  Map<DateTime, TextEditingController> _descriptionControllers = {}; 
   final TextEditingController _overlayController = TextEditingController();
   bool _showButtons = false; 
   final List<String> _buttonLabels = ['식비', '교육', '저축', '취미, 여가', '교통', '기타'];
@@ -27,6 +28,7 @@ class HouseholdPageState extends State<HouseholdPage> {
   @override
   void dispose() {
     _amountControllers.values.forEach((controller) => controller.dispose());
+    _descriptionControllers.values.forEach((controller) => controller.dispose());
     super.dispose();
   }
 
@@ -256,6 +258,10 @@ class HouseholdPageState extends State<HouseholdPage> {
                             int.parse(entry['id']!),
                           );
                           return  Container(
+                          decoration: BoxDecoration(
+                            color: entry['category'] == '0' ? Colors.red : Colors.blue,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                           margin: EdgeInsets.symmetric(vertical: 5),
                           padding: EdgeInsets.all(10),
                           child: Stack(
@@ -281,10 +287,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                                         _showKeyboardOverlay(context, '금액입력', _amountControllers[key]!);
                                       },
                                       keyboardType: TextInputType.number,
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: '금액입력',
-                                      ),
+                                      
                                       onChanged: (value) {
                                         entry['amount'] = value;
                                       }
