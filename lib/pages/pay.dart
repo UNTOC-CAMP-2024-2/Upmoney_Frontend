@@ -5,13 +5,18 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PayPage extends StatefulWidget {
-  const PayPage({super.key});
+  const PayPage({Key? key}) : super(key: key);
 
   @override
-  State<PayPage> createState() => _PayPageState();
+  PayPageState createState() => PayPageState();
 }
 
-class _PayPageState extends State<PayPage> {
+class PayPageState extends State<PayPage> {
+  void refreshData() {
+    fetchDifference(dataOptions[selectedOption]!['classify_id']);
+    fetchRecentConsumption();
+  }
+  
   String selectedOption = '식비';
   String imagePath = 'assets/images/meal.png';
 
@@ -25,32 +30,26 @@ class _PayPageState extends State<PayPage> {
     '교육': {
       'text1': '교육',
       'text2': '2,000,000',
-      'image': 'assets/images/meal.png',
+      'image': 'assets/images/education.png',
       'classify_id': 2,
     },
     '쇼핑': {
       'text1': '쇼핑',
       'text2': '3,000,000',
-      'image': 'assets/images/meal.png',
+      'image': 'assets/images/shopping.png',
       'classify_id': 3,
     },
     '여가': {
       'text1': '여가',
       'text2': '4,000,000',
-      'image': 'assets/images/relax.png',
+      'image': 'assets/images/play.png',
       'classify_id': 4,
     },
     '교통': {
       'text1': '교통',
       'text2': '5,000,000',
-      'image': 'assets/images/meal.png',
+      'image': 'assets/images/vehicle.png',
       'classify_id': 5,
-    },
-    '기타': {
-      'text1': '기타',
-      'text2': '6,000,000',
-      'image': 'assets/images/shopping.png',
-      'classify_id': 6,
     },
   };
 
@@ -170,7 +169,7 @@ class _PayPageState extends State<PayPage> {
       case 3:
         return '저축';
       case 4:
-        return '취미,여가';
+        return '여가';
       case 5:
         return '교통';
       case 6:
@@ -328,10 +327,10 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: const AlignmentDirectional(0, 0.65),
+                          alignment: const AlignmentDirectional(0, 0.655),
                           child: Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
-                                0, 0, 150, 0),
+                                0, 0, 155, 0),
                             child: Text(
                               dataOptions[selectedOption]!['text1'],
                               textAlign: TextAlign.center,
@@ -344,13 +343,13 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: const AlignmentDirectional(0, 0.83),
+                          alignment: const AlignmentDirectional(0, 0.82),
                           child: Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
-                                0, 0, 155, 0),
+                                0, 0, 140, 0),
                             child: Text(
                               dataOptions[selectedOption]!['text2'],
-                              textAlign: TextAlign.center,
+                              textAlign: TextAlign.right,
                               style: const TextStyle(
                                 color: Color.fromRGBO(236, 80, 93, 1.0),
                                 fontSize: 17,
@@ -414,6 +413,7 @@ class _PayPageState extends State<PayPage> {
                               recentConsumption != null
                                   ? recentConsumption!['description']
                                   : '데이터 없음',
+                              textAlign: TextAlign.left,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
@@ -442,11 +442,12 @@ class _PayPageState extends State<PayPage> {
                           alignment: const AlignmentDirectional(0, -0.41),
                           child: Padding(
                             padding:
-                                const EdgeInsetsDirectional.fromSTEB(35, 0, 0, 0),
+                                const EdgeInsetsDirectional.fromSTEB(100, 0, 0, 0),
                             child: Text(
                               recentConsumption != null
                                   ? '${recentConsumption!['amount']}'
                                   : '0',
+                              textAlign: TextAlign.right,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 34,
@@ -457,7 +458,7 @@ class _PayPageState extends State<PayPage> {
                           ),
                         ),
                         const Align(
-                          alignment: AlignmentDirectional(0, -0.33),
+                          alignment: AlignmentDirectional(0, -0.23),
                           child: Padding(
                             padding:
                                 EdgeInsetsDirectional.fromSTEB(220, 0, 0, 0),
@@ -475,11 +476,12 @@ class _PayPageState extends State<PayPage> {
                           alignment: const AlignmentDirectional(0, 0.84),
                           child: Padding(
                             padding:
-                                const EdgeInsetsDirectional.fromSTEB(0, 0, 165, 0),
+                                const EdgeInsetsDirectional.fromSTEB(0, 0, 150, 0),
                             child: Text(
                               recentConsumption != null
                                   ? mapCategoryToOption(recentConsumption!['category'])
                                   : '카테고리 없음',
+                              textAlign: TextAlign.left,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 22,

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GraphPage extends StatefulWidget {
   final VoidCallback onBack; // onBack 콜백 추가
@@ -7,13 +10,84 @@ class GraphPage extends StatefulWidget {
   const GraphPage({super.key, required this.onBack});
 
   @override
-  State<GraphPage> createState() => _GraphPageState();
+  GraphPageState createState() => GraphPageState();
 }
 
-class _GraphPageState extends State<GraphPage> {
+class GraphPageState extends State<GraphPage> {
+  void refreshData() {
+    fetchCategoryTotals();
+  }
+  List<double> amounts = [0, 0, 0, 0, 0, 0]; // 초기값 설정
+  bool isLoading = true; // 로딩 상태
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCategoryTotals(); // 초기화 시 데이터를 가져옴
+  }
+
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('jwt_token');
+  }
+
+  Future<void> fetchCategoryTotals() async {
+    final token = await getToken();
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('토큰이 없습니다. 다시 로그인하세요.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final url = Uri.parse('http://34.47.105.208:8000/totalcategory').replace(
+                            queryParameters: {
+                              'token':token,
+                            },
+                          );
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          amounts = List.generate(6, (index) {
+            // 각 카테고리의 소비 데이터를 가져옴
+            final categoryData = data.firstWhere(
+              (element) => element['category_id'] == index,
+              orElse: () => {'total_consumption': 0},
+            );
+            return categoryData['total_consumption'].toDouble();
+          });
+          isLoading = false; // 데이터 로드 완료
+        });
+      } else {
+        throw Exception('Failed to fetch data: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching category totals: $e');
+      setState(() {
+        isLoading = false; // 에러 발생 시 로딩 종료
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final amounts = [2300000.0, 20000.0, 21000.0, 50000.0, 2200000.0, 70000.0];
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator()); // 로딩 상태 표시
+    }
+
+  
     final total = amounts.reduce((a, b) => a + b);
     final percentages =
         amounts.map((amount) => (amount / total) * 100).toList();
@@ -87,7 +161,7 @@ class _GraphPageState extends State<GraphPage> {
                     ),
                     LegendItem(
                       color: const Color(0xFF9FC3B2),
-                      title: '취미, 여가',
+                      title: '여가',
                       amount: formatWithCommas(amounts[1]),
                     ),
                     LegendItem(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_3/pages/household.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'pages/pay.dart';
+import 'pages/graph.dart';
 import 'pages/household.dart';
 import 'pages/scholarship.dart';
 import 'pages/my.dart';
@@ -20,8 +21,8 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> {
   int selectIndex = 0;
-
-
+  final GlobalKey<PayPageState> payPageKey = GlobalKey<PayPageState>();
+  final GlobalKey<GraphPageState> graphPageKey = GlobalKey<GraphPageState>();
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +48,13 @@ class _NavigationState extends State<Navigation> {
             if (value == 2) { // "+" 아이콘 클릭 시
               showDialog(
                 context: context,
-                builder: (context) => const CustomDialog(),
+                builder: (context) => CustomDialog(
+                  onRefresh: () {
+                    // 새로고침 콜백
+                    payPageKey.currentState?.refreshData();
+                    graphPageKey.currentState?.refreshData();
+                  },
+                ),
               );
               
             } else {
@@ -98,10 +105,10 @@ class _NavigationState extends State<Navigation> {
       body: Center(
         child: IndexedStack(
           index: selectIndex,
-          children: const [
-            PayPage(),
+          children: [
+            PayPage(key: payPageKey),
             HouseholdPage(),
-            PayPage(),
+            GraphPage(key: graphPageKey, onBack: () => setState(() {})),
             ScholarshipPage(),
             MyPage(),
           ],
@@ -112,7 +119,9 @@ class _NavigationState extends State<Navigation> {
 }
 
 class CustomDialog extends StatefulWidget {
-  const CustomDialog({super.key});
+  final VoidCallback onRefresh;
+
+  const CustomDialog({Key? key, required this.onRefresh}) : super(key: key);
 
   @override
   State<CustomDialog> createState() => _CustomDialogState();
@@ -520,6 +529,7 @@ class _CustomDialogState extends State<CustomDialog> {
                             );
                           }
                           // 다이얼로그 닫기
+                          widget.onRefresh();
                           Navigator.pop(context, {
                             'type': selectedButton!,
                             'title': description.text,
