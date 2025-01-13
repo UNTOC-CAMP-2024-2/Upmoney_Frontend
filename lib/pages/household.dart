@@ -165,7 +165,8 @@ class HouseholdPageState extends State<HouseholdPage> {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      final decodedData = utf8.decode(response.bodyBytes);
+      final data = json.decode(decodedData);
       setState(() {
         HouseholdPageState.entries[today] = List<Map<String, String>>.from(data.map((item) => {
         'id': item['id'].toString(),
