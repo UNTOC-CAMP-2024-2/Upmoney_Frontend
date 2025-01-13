@@ -258,8 +258,16 @@ class HouseholdPageState extends State<HouseholdPage> {
                             today.day,
                             int.parse(entry['id']!),
                           );
-                          return  Container(
-                          decoration: BoxDecoration(
+                          return GestureDetector( 
+                            onTap: () {
+                              _showKeyboardOverlay(
+                                context,
+                                entry['id']!, 
+                                entry, 
+                                );
+                            },
+                            child: Container(
+                            decoration: BoxDecoration(
                             color: entry['category'] == '0' ? Colors.red : Colors.blue,
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -282,23 +290,20 @@ class HouseholdPageState extends State<HouseholdPage> {
                                   padding: EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
                                   child: Container(
                                     width: 150,
-                                    child: TextField(
-                                      controller: _amountControllers[key],
-                                      onTap: () {
-                                        _showKeyboardOverlay(context, '금액입력', _amountControllers[key]!);
-                                      },
-                                      keyboardType: TextInputType.number,
-                                      
-                                      onChanged: (value) {
-                                        entry['amount'] = value;
-                                      }
+                                    child: Text(
+                                      '${entry['amount'] ?? '0'}원',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                        );
+                        ),
+                          );
                         }).toList(),
                       ],
                     ),
@@ -311,8 +316,11 @@ class HouseholdPageState extends State<HouseholdPage> {
   }
 
 
-  void _showKeyboardOverlay(BuildContext context, String title, TextEditingController controller) {
-    _overlayController.text = controller.text;
+  void _showKeyboardOverlay(BuildContext context, String consumption_id, Map<String, String> entry,) async {
+    _overlayController.text = entry['amount']!;
+    final descriptionController = TextEditingController(text: entry['description'] ?? '');
+    final token = await getToken();
+    int category = 0;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -335,7 +343,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                         Padding(
                           padding: const EdgeInsets.only(right: 8.0),
                           child: Text(
-                            title,
+                            '금액입력',
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
@@ -363,20 +371,143 @@ class HouseholdPageState extends State<HouseholdPage> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.normal,
                               ),
+                              onChanged: (value) {
+                                entry['amount'] = value;
+                              },
                             ),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
+                    Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Text(
+                          '내용 입력',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: TextFormField(
+                            controller: descriptionController,
+                            autofocus: false,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              hintText: '내용 입력',
+                              isDense: true,
+                              filled: true,
+                              fillColor: const Color(0xFFFEF5F8),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                            ),
+                            onChanged: (value) {
+                              entry['description'] = value;
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                   Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.text_rotation_angledown_sharp, size: 40, color: Color(0xFFFA4F60)),
+                        onPressed: () {
+                          modalSetState(() {
+                            _showButtons = !_showButtons;
+                          });
+                        },
+                      ),
+                      const SizedBox(width: 10),
+                      if (_showButtons)
+                        Expanded(
+                          child: Container(
+                            height: 50,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _buttonLabels.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      if (_buttonLabels[index] == 0) {
+                                        entry['category'] == '1';
+                                      } else if (_buttonLabels[index] == 1){
+                                        entry['category'] == '2';
+                                      } else if (_buttonLabels[index] == 2) {
+                                        entry['category'] == '3';
+                                      } else if (_buttonLabels[index] == 3) {
+                                        entry['category'] == '4';
+                                      } else if (_buttonLabels[index] == 4) {
+                                        entry['category'] == '5';
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      minimumSize: const Size(100, 40),
+                                    ),
+                                    child: Text(
+                                      _buttonLabels[index],
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                   Spacer(),
+                    const SizedBox(height: 16),
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            controller.text = _overlayController.text;
+                        onPressed: () async {
+                          final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption_id/${entry['id']}').replace(
+                            queryParameters: {
+                              'token': token
+                            },
+                          );
+                          final response = await http.put(
+                            url,
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            
+                            body: json.encode({
+                              'category': entry['category'],
+                              'amount': _overlayController.text,
+                              'description': descriptionController.text
+                              }),
+                          );
+                          if (response.statusCode == 200) {
+                            setState(() {
+                            entry['amount'] = _overlayController.text;
+                            entry['description'] = descriptionController.text;
                           });
                           Navigator.pop(context);
+                          } else {
+                            print('Error: ${response.body}');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('수정에 실패했습니다. 다시 시도하세요.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFFA4F60),
@@ -394,6 +525,8 @@ class HouseholdPageState extends State<HouseholdPage> {
                     ),
                   ],
                 ),
+                ],
+              ),
               ),
             );
           },
