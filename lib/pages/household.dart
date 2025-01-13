@@ -18,6 +18,17 @@ class HouseholdPageState extends State<HouseholdPage> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
   static Map<DateTime, List<Map<String, String>>> entries = {};
+  Map<DateTime, TextEditingController> _amountControllers = {};
+  final TextEditingController _overlayController = TextEditingController();
+  bool _showButtons = false; 
+  final List<String> _buttonLabels = ['식비', '교육', '저축', '취미, 여가', '교통', '기타'];
+
+
+  @override
+  void dispose() {
+    _amountControllers.values.forEach((controller) => controller.dispose());
+    super.dispose();
+  }
 
 
   @override
@@ -162,6 +173,20 @@ class HouseholdPageState extends State<HouseholdPage> {
         'created_at': item['created_at'].toString(), 
         }));
       });
+
+      for (var entry in HouseholdPageState.entries[today]!) {
+        final key = DateTime(
+          today.year,
+          today.month,
+          today.day,
+          int.parse(entry['id']!),
+        );
+        if (!_amountControllers.containsKey(key)) {
+          _amountControllers[key] = TextEditingController(
+            text: entry['amount']
+          );
+        }
+      }
     } else {
       print('Error: ${response.body}');
     }
@@ -223,7 +248,14 @@ class HouseholdPageState extends State<HouseholdPage> {
                           endIndent: 10,
                           color: Colors.grey,
                         ),
-                        ...?HouseholdPageState.entries[today]?.map((entry) => Container(
+                        ...?HouseholdPageState.entries[today]?.map((entry) {
+                          final key = DateTime(
+                            today.year,
+                            today.month,
+                            today.day,
+                            int.parse(entry['id']!),
+                          );
+                          return  Container(
                           margin: EdgeInsets.symmetric(vertical: 5),
                           padding: EdgeInsets.all(10),
                           child: Stack(
@@ -243,19 +275,27 @@ class HouseholdPageState extends State<HouseholdPage> {
                                   padding: EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
                                   child: Container(
                                     width: 150,
-                                    child: Text(
-                                      '${entry['amount']!}원',
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w600,
+                                    child: TextField(
+                                      controller: _amountControllers[key],
+                                      onTap: () {
+                                        _showKeyboardOverlay(context, '금액입력', _amountControllers[key]!);
+                                      },
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: '금액입력',
                                       ),
+                                      onChanged: (value) {
+                                        entry['amount'] = value;
+                                      }
                                     ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                        ))
+                        );
+                        }).toList(),
                       ],
                     ),
                   ],
@@ -264,6 +304,98 @@ class HouseholdPageState extends State<HouseholdPage> {
           ),
         );
       });
+  }
+
+
+  void _showKeyboardOverlay(BuildContext context, String title, TextEditingController controller) {
+    _overlayController.text = controller.text;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter modalSetState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Container(
+                color: const Color(0xFFFEF5F8),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: TextFormField(
+                              controller: _overlayController,
+                              autofocus: true,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                hintText: '금액 입력',
+                                isDense: true,
+                                filled: true,
+                                fillColor: const Color(0xFFFEF5F8),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            controller.text = _overlayController.text;
+                          });
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFA4F60),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          padding: const EdgeInsets.all(0),
+                        ),
+                        child: const Icon(
+                          Icons.telegram_rounded,
+                          size: 30,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   String _todayText(DateTime selectedDay) {
@@ -281,6 +413,13 @@ class HouseholdPageState extends State<HouseholdPage> {
     final int daysDiff = selectedDayOnly.difference(todayDateOnly).inDays;
     return 'D+${daysDiff}';
   }
+
+ 
+
 }
+
+
+
+
 }
 
