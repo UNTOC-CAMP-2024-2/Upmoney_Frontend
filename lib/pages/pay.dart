@@ -103,7 +103,7 @@ class _PayPageState extends State<PayPage> {
   }
 
 
-
+  List<dynamic> fiveConsumptions = [];
   Map<String, dynamic>? recentConsumption;
 
 
@@ -147,6 +147,7 @@ class _PayPageState extends State<PayPage> {
         if (data.isNotEmpty) {
           setState(() {
             recentConsumption = data[0]; // 첫 번째 소비 데이터 사용
+            fiveConsumptions = data;
           });
         }
       } else {
@@ -512,10 +513,11 @@ class _PayPageState extends State<PayPage> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              40, 0, 10, 60),
+                      children: List.generate(fiveConsumptions.length, (index) {
+                        final consumption = fiveConsumptions[index];
+                        return Padding(
+                          padding: EdgeInsetsDirectional.fromSTEB(
+                              index == 0 ? 40 : 10, 0, index == fiveConsumptions.length - 1 ? 40 : 10, 60),
                           child: SizedBox(
                             width: 117,
                             height: 112,
@@ -527,7 +529,9 @@ class _PayPageState extends State<PayPage> {
                                     width: 117,
                                     height: 112,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF6F96F7),
+                                      color: consumption['category'] == 0 // 카테고리가 소득인지 확인
+                                         ? const Color(0xFFFA787A) // 소득일 경우 색상
+                                        : const Color(0xFF6F96F7),
                                       boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 4,
@@ -558,21 +562,21 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.69, -0.8),
+                                Align(
+                                  alignment: const AlignmentDirectional(-0.69, -0.8),
                                   child: Text(
-                                    'UNTOC',
-                                    style: TextStyle(
+                                    consumption['description'] ?? '없음',
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ),
-                                const Align(
+                                Align(
                                   alignment: AlignmentDirectional(-0.08, -0.2),
                                   child: Text(
-                                    '20,000',
+                                    '${consumption['amount'] ?? 0}',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 22,
@@ -591,10 +595,10 @@ class _PayPageState extends State<PayPage> {
                                     ),
                                   ),
                                 ),
-                                const Align(
+                                Align(
                                   alignment: AlignmentDirectional(-0.69, 0.79),
                                   child: Text(
-                                    '유흥, 여가',
+                                    mapCategoryToOption(consumption['category']),
                                     style: TextStyle(
                                       color: Color.fromRGBO(118, 118, 118, 1.0),
                                       fontSize: 16,
@@ -605,380 +609,8 @@ class _PayPageState extends State<PayPage> {
                               ],
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              10, 0, 10, 60),
-                          child: SizedBox(
-                            width: 117,
-                            height: 112,
-                            child: Stack(
-                              children: [
-                                Align(
-                                  alignment: const AlignmentDirectional(0, 0),
-                                  child: Container(
-                                    width: 117,
-                                    height: 112,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF6F96F7),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          blurRadius: 4,
-                                          color: Color(0x33000000),
-                                          offset: Offset(
-                                            0,
-                                            2,
-                                          ),
-                                        )
-                                      ],
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
-                                Align(
-                                  alignment: const AlignmentDirectional(0, 1),
-                                  child: Container(
-                                    width: 117,
-                                    height: 38,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xCCFFFFFF),
-                                      borderRadius: BorderRadius.only(
-                                        bottomLeft: Radius.circular(12),
-                                        bottomRight: Radius.circular(12),
-                                        topLeft: Radius.circular(0),
-                                        topRight: Radius.circular(0),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.69, -0.8),
-                                  child: Text(
-                                    '부산대학교',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.08, -0.2),
-                                  child: Text(
-                                    '21,000',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(0.9, -0.2),
-                                  child: Text(
-                                    '원',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.69, 0.79),
-                                  child: Text(
-                                    '교육',
-                                    style: TextStyle(
-                                      color: Color.fromRGBO(118, 118, 118, 1.0),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              10, 0, 10, 60),
-                          child: SizedBox(
-                            width: 117,
-                            height: 112,
-                            child: Stack(
-                              children: [
-                                Align(
-                                  alignment: const AlignmentDirectional(0, 0),
-                                  child: Container(
-                                    width: 117,
-                                    height: 112,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFFA787A),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          blurRadius: 4,
-                                          color: Color(0x33000000),
-                                          offset: Offset(
-                                            0,
-                                            2,
-                                          ),
-                                        )
-                                      ],
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
-                                Align(
-                                  alignment: const AlignmentDirectional(0, 1),
-                                  child: Container(
-                                    width: 117,
-                                    height: 38,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xCCFFFFFF),
-                                      borderRadius: BorderRadius.only(
-                                        bottomLeft: Radius.circular(12),
-                                        bottomRight: Radius.circular(12),
-                                        topLeft: Radius.circular(0),
-                                        topRight: Radius.circular(0),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.69, -0.8),
-                                  child: Text(
-                                    'UNTOC',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.08, -0.2),
-                                  child: Text(
-                                    '20,000',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(0.9, -0.2),
-                                  child: Text(
-                                    '원',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.69, 0.79),
-                                  child: Text(
-                                    '유흥, 여가',
-                                    style: TextStyle(
-                                      color: Color.fromRGBO(118, 118, 118, 1.0),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              10, 0, 10, 60),
-                          child: SizedBox(
-                            width: 117,
-                            height: 112,
-                            child: Stack(
-                              children: [
-                                Align(
-                                  alignment: const AlignmentDirectional(0, 0),
-                                  child: Container(
-                                    width: 117,
-                                    height: 112,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF6F96F7),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          blurRadius: 4,
-                                          color: Color(0x33000000),
-                                          offset: Offset(
-                                            0,
-                                            2,
-                                          ),
-                                        )
-                                      ],
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
-                                Align(
-                                  alignment: const AlignmentDirectional(0, 1),
-                                  child: Container(
-                                    width: 117,
-                                    height: 38,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xCCFFFFFF),
-                                      borderRadius: BorderRadius.only(
-                                        bottomLeft: Radius.circular(12),
-                                        bottomRight: Radius.circular(12),
-                                        topLeft: Radius.circular(0),
-                                        topRight: Radius.circular(0),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.69, -0.8),
-                                  child: Text(
-                                    'UNTOC',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.08, -0.2),
-                                  child: Text(
-                                    '20,000',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(0.9, -0.2),
-                                  child: Text(
-                                    '원',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.69, 0.79),
-                                  child: Text(
-                                    '유흥, 여가',
-                                    style: TextStyle(
-                                      color: Color.fromRGBO(118, 118, 118, 1.0),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              10, 0, 40, 60),
-                          child: SizedBox(
-                            width: 117,
-                            height: 112,
-                            child: Stack(
-                              children: [
-                                Align(
-                                  alignment: const AlignmentDirectional(0, 0),
-                                  child: Container(
-                                    width: 117,
-                                    height: 112,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF6F96F7),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          blurRadius: 4,
-                                          color: Color(0x33000000),
-                                          offset: Offset(
-                                            0,
-                                            2,
-                                          ),
-                                        )
-                                      ],
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
-                                Align(
-                                  alignment: const AlignmentDirectional(0, 1),
-                                  child: Container(
-                                    width: 117,
-                                    height: 38,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xCCFFFFFF),
-                                      borderRadius: BorderRadius.only(
-                                        bottomLeft: Radius.circular(12),
-                                        bottomRight: Radius.circular(12),
-                                        topLeft: Radius.circular(0),
-                                        topRight: Radius.circular(0),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.69, -0.8),
-                                  child: Text(
-                                    'UNTOC',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.08, -0.2),
-                                  child: Text(
-                                    '20,000',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(0.9, -0.2),
-                                  child: Text(
-                                    '원',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const Align(
-                                  alignment: AlignmentDirectional(-0.69, 0.79),
-                                  child: Text(
-                                    '유흥, 여가',
-                                    style: TextStyle(
-                                      color: Color.fromRGBO(118, 118, 118, 1.0),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),
