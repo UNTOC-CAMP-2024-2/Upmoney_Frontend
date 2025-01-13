@@ -1,120 +1,311 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MyPage extends StatelessWidget {
+class MyPage extends StatefulWidget {
   const MyPage({super.key});
 
   @override
+  State<MyPage> createState() => _MyPageState();
+}
+
+class _MyPageState extends State<MyPage> {
+  Map<String, dynamic>? userData; // 사용자 정보 저장
+  bool isLoading = false;         // 로딩 상태
+  String? errorMessage;           // 에러 메시지
+  String? fortuneMessage;
+
+  // 1. 내 정보 가져오기 함수
+  Future<void> fetchUserInfo() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      // 1) SharedPreferences에서 토큰 가져오기
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('jwt_token'); // 저장된 토큰 가져오기
+      if (token == null) {
+        print("토큰이 없습니다. 로그인이 필요합니다.");
+      } else {
+        print("저장된 토큰: $token");
+      }
+
+      if (token == null) {
+        throw Exception('로그인 정보가 없습니다. 다시 로그인해주세요.');
+      }
+
+      // 2) 백엔드 /auth/userinfo 호출
+      final url = Uri.parse('http://34.47.105.208:8000/auth/userinfo').replace(
+        queryParameters: {
+          'token':token,
+        }
+      );
+      final response = await http.get(
+        url,
+        headers: {
+          'Conten-Type': 'application/json',
+        },
+      );
+
+      // 3) 응답 처리
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          userData = data; // 서버에서 받은 유저 정보 저장
+          isLoading = false;
+        });
+      } else if (response.statusCode == 401) {
+        throw Exception('인증 정보가 유효하지 않습니다. 다시 로그인해주세요.');
+      } else {
+        throw Exception('서버 오류: ${response.statusCode}');
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = '사용자 정보를 가져오는 중 오류가 발생했습니다: $e';
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> fetchFortune() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      final url = Uri.parse('hhttp://34.47.105.208:8000/monetaryluck/random');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          fortuneMessage = data['fortune']; // 'fortune' 키로 데이터를 가져옴
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          errorMessage = "금전운 정보를 가져오는 데 실패했습니다. (${response.statusCode})";
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = "금전운 정보를 가져오는 중 오류가 발생했습니다: $e";
+        isLoading = false;
+      });
+    }
+  }
+
+  // 2. UI 빌드
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          // Section 1: 사용자 정보
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.account_circle,
-                  size: 130,
-                  color: Colors.grey,
+      body: SingleChildScrollView( // 전체 스크롤 가능하게 변경
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            // Section 1: 사용자 정보
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.account_circle,
+                    size: 130,
+                    color: Colors.grey,
+                  ),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "반갑습니다!",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        userData != null
+                            ? "${userData!['name']} 님"
+                            : "사용자 이름 님", // 사용자 이름 표시
+                        style: const TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: fetchUserInfo, // 내 정보 가져오기
+                        child: const Text(
+                          "내 정보 확인",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.blue, // 클릭 가능하게 파란색으로 변경
+                            decoration: TextDecoration.underline, // 밑줄 추가
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 15),
+
+            // Section 2: 내 정보 확인 결과
+            if (isLoading) ...[
+              const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ] else if (errorMessage != null) ...[
+              Center(
+                child: Text(
+                  errorMessage!,
+                  style: const TextStyle(fontSize: 18, color: Colors.red),
+                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(width: 16),
-                Column(
+              ),
+            ] else if (userData != null) ...[
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Text(
-                      "반갑습니다!",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      "이름: ${userData!['name']}",
+                      style: const TextStyle(fontSize: 20),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      "사용자 이름 님", // * 변수로 수정해야함
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      "나이: ${userData!['age']}세",
+                      style: const TextStyle(fontSize: 20),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      "아이디 | 비밀번호 확인",
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.grey,
-                      ),
+                      "성별: ${userData!['gender']}",
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "아이디: ${userData!['username']}",
+                      style: const TextStyle(fontSize: 20),
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 15), // Section 1과 Section 2 사이 간격
+              ),
+            ],
 
-          // Section 2: 금전운
-          Container(
-            width: double.infinity, 
-            height: 320, 
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/money_luck_01.png'), 
-                fit: BoxFit.fitHeight, 
+            // Section 3: 금전운 (기존 코드 유지)
+            Container(
+              width: double.infinity,
+              height: 320,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/monetaryluck.png'),
+                  fit: BoxFit.fitHeight,
+                ),
+              ),
+              child: Center(
+                child: isLoading
+                    ? const CircularProgressIndicator() // 로딩 중
+                    : errorMessage != null
+                        ? Text(
+                            errorMessage!,
+                            style: const TextStyle(fontSize: 18, color: Colors.red),
+                            textAlign: TextAlign.center,
+                          )
+                        : Text(
+                            fortuneMessage ?? "운세를 불러오는 중...",
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
               ),
             ),
-          ),
-          // Section 3: 공지사항 등...
-          Expanded(
-            child: ListView(
-              children: [
-                _buildListTile(context, "금전운 안내서", GuidePage(title: "금전운 안내서")),
-                _buildListTile(context, "공지사항", GuidePage(title: "공지사항")),
-                _buildListTile(context, "앱 사용방법", GuidePage(title: "앱 사용방법")),
-              ],
+
+            // Section 4: 공지사항
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: ListView(
+                shrinkWrap: true, // 스크롤 충돌 방지
+                physics: const NeverScrollableScrollPhysics(), // ListView 내부 스크롤 비활성화
+                children: [
+                  _buildListTile(
+                    context,
+                    "금전운 안내서",
+                    const GuidePage(title: "금전운 안내서"),
+                  ),
+                  _buildListTile(
+                    context,
+                    "공지사항",
+                    const GuidePage(title: "공지사항"),
+                  ),
+                  _buildListTile(
+                    context,
+                    "앱 사용방법",
+                    const GuidePage(title: "앱 사용방법"),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-Widget _buildListTile(BuildContext context, String title, Widget nextpage, {bool isLastItem = false}) {
-  return Column(
-    children: [
-      ListTile(
-        contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.w500,
+  // 리스트 타일 유지
+  Widget _buildListTile(
+    BuildContext context,
+    String title,
+    Widget nextpage, {
+    bool isLastItem = false,
+  }) {
+    return Column(
+      children: [
+        ListTile(
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.w500,
+            ),
           ),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => nextpage),
+            );
+          },
         ),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => nextpage),
-          );
-        },
-      ),
-      if (!isLastItem) // 마지막 항목이 아니면 아래쪽 선 추가
-        const Divider(
-          thickness: 1.0,
-          color: Colors.grey,
-          height: 0,
-        ),
+        if (!isLastItem)
+          const Divider(
+            thickness: 1.0,
+            color: Colors.grey,
+            height: 0,
+          ),
       ],
     );
   }
 }
 
 
-// 공지사항 새 페이지
+
 class GuidePage extends StatelessWidget {
   final String title; 
   const GuidePage({super.key, required this.title});

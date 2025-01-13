@@ -31,6 +31,7 @@ class _LoginPageState extends State<LoginPage> {
 
         // Save token using SharedPreferences
         final prefs = await SharedPreferences.getInstance();
+        print('Saved Token: ${prefs.getString('jwt_token')}');
         await prefs.setString('jwt_token', token);
 
         // Navigate to the next page
