@@ -53,7 +53,8 @@ void initState() {
 
       // 3) 응답 처리
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final decodedBody = utf8.decode(response.bodyBytes); // UTF-8 디코딩
+        final data = json.decode(decodedBody);
         setState(() {
           userData = data;
           isLoading = false;
