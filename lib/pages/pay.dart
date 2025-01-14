@@ -25,31 +25,31 @@ class PayPageState extends State<PayPage> {
   final Map<String, Map<String, dynamic>> dataOptions = {
     '식비': {
       'text1': '식비',
-      'text2': '1,000,000',
+      'text2': '',
       'image': 'assets/images/meal.png',
       'classify_id': 1,
     },
     '교육': {
       'text1': '교육',
-      'text2': '2,000,000',
+      'text2': '',
       'image': 'assets/images/education.png',
       'classify_id': 2,
     },
     '쇼핑': {
       'text1': '쇼핑',
-      'text2': '3,000,000',
+      'text2': '',
       'image': 'assets/images/shopping.png',
       'classify_id': 3,
     },
     '여가': {
       'text1': '여가',
-      'text2': '4,000,000',
+      'text2': '',
       'image': 'assets/images/play.png',
       'classify_id': 4,
     },
     '교통': {
       'text1': '교통',
-      'text2': '5,000,000',
+      'text2': '',
       'image': 'assets/images/vehicle.png',
       'classify_id': 5,
     },
@@ -456,7 +456,9 @@ class PayPageState extends State<PayPage> {
                           alignment: const AlignmentDirectional(0, 0.82),
                           child: Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
-                                0, 0, 140, 0),
+                                0, 0, 210, 0),
+                            child: SizedBox(
+                            width: 150,
                             child: Text(
                               dataOptions[selectedOption]!['text2'],
                               textAlign: TextAlign.right,
@@ -467,6 +469,7 @@ class PayPageState extends State<PayPage> {
                               ),
                             ),
                           ),
+                        ),
                         ),
                       ],
                     ),
