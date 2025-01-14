@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+// webview_flutter 4.2.1용
+import 'package:webview_flutter/webview_flutter.dart';
 
 ///
-/// scholarship_model.dart
+/// 장학금 데이터 모델
 ///
 class Scholarship {
   final int id;
@@ -28,18 +30,20 @@ class Scholarship {
   }
 }
 
+///
+/// ScholarshipPage: (HomePage를 감싸는 용도)
+///
 class ScholarshipPage extends StatelessWidget {
   const ScholarshipPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 원래 코드 유지
     return const HomePage();
   }
 }
 
 ///
-/// ❶ StatelessWidget -> StatefulWidget
+/// ❶ HomePage: StatefulWidget
 ///
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -55,8 +59,8 @@ class _HomePageState extends State<HomePage> {
   /// 현재 보여줄 장학금 리스트
   List<Scholarship> scholarships = [];
 
-  bool isLoading = false;
-  String? errorMessage;
+  bool isLoading = false; // 로딩 중 여부
+  String? errorMessage; // 오류 메시지
 
   /// 검색어
   final TextEditingController _searchController = TextEditingController();
@@ -65,7 +69,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    fetchScholarships1(); // 시작 시 scholarship/1 (기존 장학금1) 먼저 로딩
+    fetchScholarships1(); // 앱 시작 시 PNU(1) 장학금 먼저 로딩
   }
 
   /// scholarship/1 데이터 가져오기
@@ -129,7 +133,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 국가장학금 버튼은 제거, PNU/PNU_CSE 버튼만 남김
+      // 상단 AppBar
       appBar: AppBar(
         scrolledUnderElevation: 0,
         title: Row(
@@ -137,17 +141,16 @@ class _HomePageState extends State<HomePage> {
           children: [
             Row(
               children: [
-                // 1) PNU 버튼 → scholarship/1 데이터
+                // 1) PNU 버튼
                 CategoryButton(
                   label: 'PNU',
                   onPressed: fetchScholarships1,
                 ),
-                // 2) PNU_CSE 버튼 → scholarship/2 데이터
+                // 2) PNU_CSE 버튼
                 CategoryButton(
                   label: 'PNU_CSE',
                   onPressed: fetchScholarships2,
                 ),
-                // "국가장학금" 버튼은 삭제
               ],
             )
           ],
@@ -188,59 +191,63 @@ class _HomePageState extends State<HomePage> {
 
           // 장학금 리스트 (검색 적용)
           Expanded(
-            child: ListView.builder(
-              itemCount: filteredScholarships.length,
-              itemBuilder: (context, index) {
-                final scholarship = filteredScholarships[index];
-                return Container(
-                  height: 80.0, // 고정 높이
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
-                      ),
+              child: ListView.builder(
+            itemCount: filteredScholarships.length,
+            itemBuilder: (context, index) {
+              final scholarship = filteredScholarships[index];
+              return Container(
+                height: 80.0, // 항목별 높이
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.grey.shade300,
+                      width: 1.0,
                     ),
                   ),
-                  child: InkWell(
-                    onTap: () {
-                      // 상세 페이지 이동
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ScholarshipDetailPage(
-                            scholarshipName: scholarship.name,
-                            link: scholarship.link,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // 장학금 이름
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(
-                            scholarship.name,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
+                ),
+                child: InkWell(
+                  onTap: () {
+                    // WebViewPage로 이동
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            WebViewPage(url: scholarship.link),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // (중요) 장학금 이름을 SingleChildScrollView로 감싸기
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(
+                              scholarship.name,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ),
-                        // 오른쪽 화살표 아이콘
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Icon(Icons.arrow_forward),
-                        ),
-                      ],
-                    ),
+                      ),
+
+                      // 오른쪽 화살표 아이콘
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Icon(Icons.arrow_forward),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
-          ),
+                ),
+              );
+            },
+          )),
         ],
       ),
     );
@@ -248,12 +255,11 @@ class _HomePageState extends State<HomePage> {
 }
 
 ///
-/// CategoryButton 수정:
-/// - onPressed: () => ... 기능을 받도록 변경
+/// CategoryButton: PNU / PNU_CSE 버튼
 ///
 class CategoryButton extends StatelessWidget {
   final String label;
-  final VoidCallback? onPressed; // 새로 추가
+  final VoidCallback? onPressed;
 
   const CategoryButton({
     super.key,
@@ -287,7 +293,7 @@ class CategoryButton extends StatelessWidget {
 }
 
 ///
-/// 상세 페이지 (기존 코드 그대로)
+/// 상세 페이지 (원본 그대로, 미사용이지만 "삭제하지 않음")
 ///
 class ScholarshipDetailPage extends StatelessWidget {
   final String scholarshipName;
@@ -310,11 +316,91 @@ class ScholarshipDetailPage extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: Text(
-          '$scholarshipName 상세 정보\n\n링크: $link',
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '$scholarshipName 상세 정보\n\n링크: $link',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 20),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              // 앱 내부 WebView로 링크 열기
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WebViewPage(url: link),
+                  ),
+                );
+              },
+              child: const Text("앱 내부에서 링크 열기"),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+///
+/// WebViewPage: 앱 내부 브라우저 (webview_flutter: ^4.2.1 대응)
+///
+class WebViewPage extends StatefulWidget {
+  final String url;
+  const WebViewPage({super.key, required this.url});
+
+  @override
+  State<WebViewPage> createState() => _WebViewPageState();
+}
+
+class _WebViewPageState extends State<WebViewPage> {
+  /// WebViewController (4.2.1 버전용)
+  late final WebViewController _controller;
+
+  bool _isLoading = true; // 웹뷰 로딩 상태
+
+  @override
+  void initState() {
+    super.initState();
+    // 컨트롤러 초기화
+    _controller = WebViewController()
+      // 자바스크립트 모드 설정
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      // 페이지 로드 상황을 받아서 로딩 인디케이터 제어
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (url) {
+            setState(() {
+              _isLoading = true;
+            });
+          },
+          onPageFinished: (url) {
+            setState(() {
+              _isLoading = false;
+            });
+          },
+          // 필요 시: onNavigationRequest, onWebResourceError 등 추가 가능
+        ),
+      )
+      // 실제 페이지 로드
+      ..loadRequest(Uri.parse(widget.url));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(''),
+      ),
+      body: Stack(
+        children: [
+          // 4.2.1 이상에서는 WebView 대신 WebViewWidget 사용
+          WebViewWidget(controller: _controller),
+          // 로딩 인디케이터
+          if (_isLoading) const Center(child: CircularProgressIndicator()),
+        ],
       ),
     );
   }
