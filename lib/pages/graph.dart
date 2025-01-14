@@ -134,7 +134,12 @@ class GraphPageState extends State<GraphPage> {
             ],
           ),
         ),
-        body: SingleChildScrollView(
+        body: RefreshIndicator(
+          onRefresh: () async {
+          await fetchCategoryTotals(); // 새로고침 시 데이터 갱신
+          },
+          child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -203,6 +208,7 @@ class GraphPageState extends State<GraphPage> {
             ],
           ),
         ),
+      ),
       ),
     );
   }
