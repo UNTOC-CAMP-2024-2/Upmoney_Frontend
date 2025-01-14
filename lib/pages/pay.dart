@@ -255,7 +255,7 @@ class PayPageState extends State<PayPage> {
                                 borderRadius: BorderRadius.circular(1000),
                                 border: Border.all(
                                   color:
-                                      const Color.fromRGBO(88, 134, 186, 1.0),
+                                      const Color(0xFFDFE8FF),
                                 ),
                               ),
                               child: DropdownButton(
@@ -327,10 +327,10 @@ class PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: const AlignmentDirectional(0, 0.655),
+                          alignment: const AlignmentDirectional(0, 0.635),
                           child: Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
-                                0, 0, 155, 0),
+                                0, 0, 145, 0),
                             child: Text(
                               dataOptions[selectedOption]!['text1'],
                               textAlign: TextAlign.center,
@@ -343,7 +343,7 @@ class PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: const AlignmentDirectional(0, 0.82),
+                          alignment: const AlignmentDirectional(0, 0.825),
                           child: Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
                                 0, 0, 140, 0),
@@ -443,7 +443,7 @@ class PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: const AlignmentDirectional(0, -0.41),
+                          alignment: const AlignmentDirectional(0, -0.3),
                           child: Padding(
                             padding:
                                 const EdgeInsetsDirectional.fromSTEB(50, 0, 0, 0),
@@ -580,7 +580,7 @@ class PayPageState extends State<PayPage> {
                                   ),
                                 ),
                                 Align(
-                                  alignment: AlignmentDirectional(-0.08, -0.2),
+                                  alignment: AlignmentDirectional(-0.08, -0.15),
                                   child: Text(
                                     '${consumption['amount'] ?? 0}',
                                     style: TextStyle(
