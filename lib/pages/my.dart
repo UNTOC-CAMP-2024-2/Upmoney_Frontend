@@ -243,35 +243,47 @@ void initState() {
             const SizedBox(height: 15),
 
             // Section 3: 금전운 
-            Container(
-              width: double.infinity,
-              height: 320,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/monetaryluck.png'),
-                  fit: BoxFit.fitHeight,
-                ),
-              ),
-              child: Center(
-                child: isLoading
-                    ? const CircularProgressIndicator() // 로딩 중
-                    : errorMessage != null
-                        ? Text(
-                            errorMessage!,
-                            style: const TextStyle(fontSize: 18, color: Colors.red),
-                            textAlign: TextAlign.center,
-                          )
-                        : Text(
-                            fortuneMessage ?? "운세를 불러오는 중...",
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
+          Container(
+            width: double.infinity,
+            height: 320,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/monetaryluck_Tree.png'),
+                fit: BoxFit.fitHeight, // 이미지를 컨테이너 크기에 맞게 조정
               ),
             ),
+            child: Stack(
+              children: [
+                // 금전운 텍스트
+                Positioned(
+                  right: 10, // 오른쪽 여백
+                  top: 120.0, // 위쪽 여백
+                  child: Container(
+                    width: 379.0,
+                    padding: const EdgeInsets.all(8.0), // 텍스트 주위 여백
+                    // color: Colors.white.withOpacity(0.8), // 텍스트 배경
+                    child: isLoading
+                        ? const CircularProgressIndicator() // 로딩 중
+                        : errorMessage != null
+                            ? Text(
+                                errorMessage!,
+                                style: const TextStyle(fontSize: 18, color: Colors.red),
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(
+                                fortuneMessage ?? "운세를 불러오는 중...",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                  ),
+                ),
+              ],
+            ),
+          ),
 
             // Section 4: 공지사항
             Padding(
