@@ -26,13 +26,7 @@ class _MyPageState extends State<MyPage> {
     try {
       // 1) SharedPreferences에서 토큰 가져오기
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('jwt_token'); // 저장된 토큰 가져오기
-      if (token == null) {
-        print("토큰이 없습니다. 로그인이 필요합니다.");
-      } else {
-        print("저장된 토큰: $token");
-      }
-
+      final token = prefs.getString('jwt_token');
       if (token == null) {
         throw Exception('로그인 정보가 없습니다. 다시 로그인해주세요.');
       }
@@ -46,7 +40,8 @@ class _MyPageState extends State<MyPage> {
       final response = await http.get(
         url,
         headers: {
-          'Conten-Type': 'application/json',
+          'Conten-Type': 'application/json; charset=utf-8',
+          'Accept': 'application/json; charset=utf-8',
         },
       );
 
@@ -54,11 +49,10 @@ class _MyPageState extends State<MyPage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          userData = data; // 서버에서 받은 유저 정보 저장
+          userData = data;
           isLoading = false;
         });
-      } else if (response.statusCode == 401) {
-        throw Exception('인증 정보가 유효하지 않습니다. 다시 로그인해주세요.');
+        showUserInfoModal(); // 모달창 호출
       } else {
         throw Exception('서버 오류: ${response.statusCode}');
       }
@@ -68,6 +62,69 @@ class _MyPageState extends State<MyPage> {
         isLoading = false;
       });
     }
+  }
+
+  // 모달 창 호출
+  void showUserInfoModal() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+      ),
+      builder: (BuildContext context) {
+        if (userData == null) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "내 정보",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Divider(thickness: 1),
+              Text(
+                "이름: ${userData!['name']}",
+                style: const TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "나이: ${userData!['age']}세",
+                style: const TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "성별: ${userData!['gender']}",
+                style: const TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "아이디: ${userData!['username']}",
+                style: const TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 16),
+              Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // 모달 닫기
+                  },
+                  child: const Text("닫기"),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> fetchFortune() async {
@@ -160,49 +217,6 @@ class _MyPageState extends State<MyPage> {
               ),
             ),
             const SizedBox(height: 15),
-
-            // Section 2: 내 정보 확인 결과
-            if (isLoading) ...[
-              const Center(
-                child: CircularProgressIndicator(),
-              ),
-            ] else if (errorMessage != null) ...[
-              Center(
-                child: Text(
-                  errorMessage!,
-                  style: const TextStyle(fontSize: 18, color: Colors.red),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ] else if (userData != null) ...[
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "이름: ${userData!['name']}",
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "나이: ${userData!['age']}세",
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "성별: ${userData!['gender']}",
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "아이디: ${userData!['username']}",
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ],
-                ),
-              ),
-            ],
 
             // Section 3: 금전운 (기존 코드 유지)
             Container(
