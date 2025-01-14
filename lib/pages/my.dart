@@ -19,11 +19,12 @@ class _MyPageState extends State<MyPage> {
   @override
 void initState() {
   super.initState();
-  fetchFortune(); // 페이지가 처음 로드될 때 금전운 호출
+  fetchFortune();
+  fetchUserInfo();
 }
 
   // 1. 내 정보 가져오기 함수
-  Future<void> fetchUserInfo() async {
+  Future<void> fetchUserInfo({bool showModalOnSuccess = false}) async {
     setState(() {
       isLoading = true;
       errorMessage = null;
@@ -52,24 +53,38 @@ void initState() {
       );
 
       // 3) 응답 처리
-      if (response.statusCode == 200) {
-        final decodedBody = utf8.decode(response.bodyBytes); // UTF-8 디코딩
-        final data = json.decode(decodedBody);
-        setState(() {
-          userData = data;
-          isLoading = false;
-        });
-        showUserInfoModal(); // 모달창 호출
-      } else {
-        throw Exception('서버 오류: ${response.statusCode}');
-      }
-    } catch (e) {
+    if (response.statusCode == 200) {
+      final decodedBody = utf8.decode(response.bodyBytes); // UTF-8 디코딩
+      final data = json.decode(decodedBody);
       setState(() {
-        errorMessage = '사용자 정보를 가져오는 중 오류가 발생했습니다: $e';
+        userData = data;
         isLoading = false;
       });
+
+      // showModalOnSuccess가 true일 때만 모달 호출
+      if (showModalOnSuccess) {
+        showUserInfoModal();
+      }
+    } else {
+      throw Exception('서버 오류: ${response.statusCode}');
     }
+  } catch (e) {
+    setState(() {
+      errorMessage = '사용자 정보를 가져오는 중 오류가 발생했습니다: $e';
+      isLoading = false;
+    });
   }
+}
+
+  String convertGenderToKorean(String gender) {
+  const genderMap = {
+    'male': '남성',
+    'female': '여성',
+    'other': '기타',
+  };
+  return genderMap[gender] ?? '알 수 없음'; // 변환 실패 시 기본값 설정
+}
+
 
   // 모달 창 호출
   void showUserInfoModal() {
@@ -110,7 +125,7 @@ void initState() {
               ),
               const SizedBox(height: 8),
               Text(
-                "성별: ${userData!['gender']}",
+                "성별: ${convertGenderToKorean(userData!['gender'])}",
                 style: const TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 8),
@@ -210,13 +225,13 @@ void initState() {
                       ),
                       const SizedBox(height: 8),
                       GestureDetector(
-                        onTap: fetchUserInfo, // 내 정보 가져오기
+                        onTap: () => fetchUserInfo(showModalOnSuccess: true), // 버튼 클릭 시 모달 호출
                         child: const Text(
                           "내 정보 확인",
                           style: TextStyle(
                             fontSize: 20,
-                            color: Color.fromARGB(255, 70, 74, 77), // 클릭 가능하게 파란색으로 변경
-                            decoration: TextDecoration.underline, // 밑줄 추가
+                            color: Color.fromARGB(255, 70, 74, 77),
+                            decoration: TextDecoration.underline,
                           ),
                         ),
                       ),
