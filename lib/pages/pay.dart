@@ -13,6 +13,7 @@ class PayPage extends StatefulWidget {
 
 class PayPageState extends State<PayPage> {
   void refreshData() {
+    fetchUserinfo();
     fetchDifference(dataOptions[selectedOption]!['classify_id']);
     fetchRecentConsumption();
     fetchMostRecentConsumption();
@@ -61,6 +62,9 @@ class PayPageState extends State<PayPage> {
   return prefs.getString('jwt_token');
   }
 
+  Map<String, dynamic>? userData;
+  String dynamictext = "";
+
   Future<void> fetchDifference(int classifyId) async {
     final token = await getToken();
     if (token == null) {
@@ -92,6 +96,17 @@ class PayPageState extends State<PayPage> {
         final data = json.decode(response.body);
         setState(() {
           // text2를 차이값으로 업데이트
+          if (userData!['gender'] == "male" && data['difference'] >= 0){
+              dynamictext = "에서 20대 남성보다\n         원 더 소비했어요 !";
+          } else if (userData!['gender'] == "male" && data['difference'] < 0){
+              dynamictext = "에서 20대 남성보다\n         원 덜 소비했어요 !";
+              data['difference'] *= -1;
+          } else if (userData!['gender'] == "female" && data['difference'] >= 0){
+              dynamictext = "에서 20대 여성보다\n         원 더 소비했어요 !";
+          } else if (userData!['gender'] == "female" && data['difference'] < 0){
+              dynamictext = "에서 20대 여성보다\n         원 덜 소비했어요 !";
+              data['difference'] *= -1;
+          }
           dataOptions[selectedOption]!['text2'] = data['difference'].toString();
         });
       } else {
@@ -110,6 +125,7 @@ class PayPageState extends State<PayPage> {
   @override
   void initState() {
     super.initState();
+    fetchUserinfo();
     fetchDifference(dataOptions[selectedOption]!['classify_id']);
     fetchRecentConsumption(); // PayPage 시작 시 최근 소비 데이터 가져오기
     fetchMostRecentConsumption();
@@ -202,6 +218,52 @@ class PayPageState extends State<PayPage> {
     }
   }
 
+ 
+
+  Future<void> fetchUserinfo() async {
+    final token = await getToken();
+    print('Retrieved Token: $token'); // null이면 저장 과정에서 문제가 있음
+
+    if (token == null) {
+     ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('토큰이 없습니다. 다시 로그인하세요.'),
+        backgroundColor: Colors.red,
+      ),
+     );
+     return;
+    }
+
+    final url = Uri.parse('http://34.47.105.208:8000/auth/userinfo').replace(
+                            queryParameters: {
+                              'token':token,
+                            },
+                          );
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+        'Content-Type': 'application/json',
+      },
+      );
+
+      if (response.statusCode == 200) {
+        final decodedData = utf8.decode(response.bodyBytes);
+        final data = json.decode(decodedData);
+        if (data.isNotEmpty) {
+          setState(() {
+            userData = data;
+          });
+        }
+      } else {
+        throw Exception('Failed to fetch data: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching recent consumption: $e');
+    }
+  }
+
+
   String mapCategoryToOption(int category) {
     // 카테고리 숫자를 문자열로 매핑
     switch (category) {
@@ -241,6 +303,7 @@ class PayPageState extends State<PayPage> {
         body: RefreshIndicator(
         onRefresh: () async {
           // 새로고침 시 데이터 갱신
+          await fetchUserinfo();
           await fetchDifference(dataOptions[selectedOption]!['classify_id']);
           await fetchRecentConsumption();
           await fetchMostRecentConsumption();
@@ -330,10 +393,11 @@ class PayPageState extends State<PayPage> {
                                     ),
                                   );
                                 }).toList(),
-                                onChanged: (String? newValue) {
+                                onChanged: (String? newValue) async {
                                   setState(() {
                                     selectedOption = newValue!;
                                   });
+                                  await fetchDifference(dataOptions[newValue]!['classify_id']);
                                 },
                               ),
                             ),
@@ -356,13 +420,13 @@ class PayPageState extends State<PayPage> {
                             ),
                           ),
                         ),
-                        const Align(
+                        Align(
                           alignment: AlignmentDirectional(0, 0.8),
                           child: Padding(
                             padding:
                                 EdgeInsetsDirectional.fromSTEB(35, 0, 0, 0),
                             child: Text(
-                              '에서 20대 남성보다\n         원 더 소비했어요 !',
+                              dynamictext,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Color.fromRGBO(30, 18, 74, 1.0),
