@@ -75,13 +75,15 @@ class _HomePageState extends State<HomePage> {
   /// scholarship/1 데이터 가져오기
   Future<void> fetchScholarships1() async {
     await _fetchScholarshipsFromUrl(
-        'http://34.47.105.208:8000/scholarship/1?limit=15');
+      'http://34.47.105.208:8000/scholarship/1?limit=15',
+    );
   }
 
   /// scholarship/2 데이터 가져오기
   Future<void> fetchScholarships2() async {
     await _fetchScholarshipsFromUrl(
-        'http://34.47.105.208:8000/scholarship/2?limit=15');
+      'http://34.47.105.208:8000/scholarship/2?limit=15',
+    );
   }
 
   /// 실제로 데이터를 받아와서 scholarships에 넣어주는 함수
@@ -151,8 +153,37 @@ class _HomePageState extends State<HomePage> {
                   label: 'PNU_CSE',
                   onPressed: fetchScholarships2,
                 ),
+                // 3) 국가장학금 버튼 (추가)
+                ElevatedButton(
+                  onPressed: () {
+                    // 국가장학금 사이트로 이동
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const WebViewPage(
+                          url:
+                              'https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship_main',
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0x00f4f4fe).withOpacity(0.9),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: const BorderSide(
+                        color: Color(0xFF081F5C),
+                        width: 1.0,
+                      ),
+                    ),
+                  ),
+                  child: const Text(
+                    '국가장학금',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -191,63 +222,64 @@ class _HomePageState extends State<HomePage> {
 
           // 장학금 리스트 (검색 적용)
           Expanded(
-              child: ListView.builder(
-            itemCount: filteredScholarships.length,
-            itemBuilder: (context, index) {
-              final scholarship = filteredScholarships[index];
-              return Container(
-                height: 80.0, // 항목별 높이
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.grey.shade300,
-                      width: 1.0,
+            child: ListView.builder(
+              itemCount: filteredScholarships.length,
+              itemBuilder: (context, index) {
+                final scholarship = filteredScholarships[index];
+                return Container(
+                  height: 80.0, // 항목별 높이
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Colors.grey.shade300,
+                        width: 1.0,
+                      ),
                     ),
                   ),
-                ),
-                child: InkWell(
-                  onTap: () {
-                    // WebViewPage로 이동
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            WebViewPage(url: scholarship.link),
-                      ),
-                    );
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // (중요) 장학금 이름을 SingleChildScrollView로 감싸기
-                      Expanded(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text(
-                              scholarship.name,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
+                  child: InkWell(
+                    onTap: () {
+                      // WebViewPage로 이동
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => WebViewPage(
+                            url: scholarship.link,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // (중요) 장학금 이름을 SingleChildScrollView로 감싸기
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Text(
+                                scholarship.name,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-
-                      // 오른쪽 화살표 아이콘
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Icon(Icons.arrow_forward),
-                      ),
-                    ],
+                        // 오른쪽 화살표 아이콘
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Icon(Icons.arrow_forward),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          )),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
