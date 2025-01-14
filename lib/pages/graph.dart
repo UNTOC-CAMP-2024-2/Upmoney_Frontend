@@ -62,8 +62,9 @@ class GraphPageState extends State<GraphPage> {
         setState(() {
           amounts = List.generate(6, (index) {
             // 각 카테고리의 소비 데이터를 가져옴
+            final categoryIndex = index + 1;
             final categoryData = data.firstWhere(
-              (element) => element['category_id'] == index,
+              (element) => element['category_id'] == categoryIndex,
               orElse: () => {'total_consumption': 0},
             );
             return categoryData['total_consumption'].toDouble();

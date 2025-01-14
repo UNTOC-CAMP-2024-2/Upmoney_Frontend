@@ -408,17 +408,21 @@ class PayPageState extends State<PayPage> {
                           alignment: const AlignmentDirectional(0, -0.79),
                           child: Padding(
                             padding:
-                                const EdgeInsetsDirectional.fromSTEB(0, 0, 195, 0),
+                                const EdgeInsetsDirectional.fromSTEB(0, 0, 20, 0),
+                            child: SizedBox(
+                            width: 250,
                             child: Text(
                               recentConsumption != null
                                   ? recentConsumption!['description']
                                   : '데이터 없음',
                               textAlign: TextAlign.left,
+                              softWrap: false,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                               ),
+                            ),
                             ),
                           ),
                         ),
@@ -442,7 +446,7 @@ class PayPageState extends State<PayPage> {
                           alignment: const AlignmentDirectional(0, -0.41),
                           child: Padding(
                             padding:
-                                const EdgeInsetsDirectional.fromSTEB(100, 0, 0, 0),
+                                const EdgeInsetsDirectional.fromSTEB(50, 0, 0, 0),
                             child: Text(
                               recentConsumption != null
                                   ? '${recentConsumption!['amount']}'
@@ -476,7 +480,7 @@ class PayPageState extends State<PayPage> {
                           alignment: const AlignmentDirectional(0, 0.84),
                           child: Padding(
                             padding:
-                                const EdgeInsetsDirectional.fromSTEB(0, 0, 150, 0),
+                                const EdgeInsetsDirectional.fromSTEB(0, 0, 220, 0),
                             child: Text(
                               recentConsumption != null
                                   ? mapCategoryToOption(recentConsumption!['category'])
@@ -587,7 +591,7 @@ class PayPageState extends State<PayPage> {
                                   ),
                                 ),
                                 const Align(
-                                  alignment: AlignmentDirectional(0.9, -0.2),
+                                  alignment: AlignmentDirectional(0.9, -0.15),
                                   child: Text(
                                     '원',
                                     style: TextStyle(
