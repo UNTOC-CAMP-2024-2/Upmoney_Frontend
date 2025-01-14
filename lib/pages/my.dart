@@ -16,6 +16,12 @@ class _MyPageState extends State<MyPage> {
   String? errorMessage;           // 에러 메시지
   String? fortuneMessage;
 
+  @override
+void initState() {
+  super.initState();
+  fetchFortune(); // 페이지가 처음 로드될 때 금전운 호출
+}
+
   // 1. 내 정보 가져오기 함수
   Future<void> fetchUserInfo() async {
     setState(() {
@@ -135,13 +141,14 @@ class _MyPageState extends State<MyPage> {
     });
 
     try {
-      final url = Uri.parse('hhttp://34.47.105.208:8000/monetaryluck/random');
+      final url = Uri.parse('http://34.47.105.208:8000/monetaryluck/random');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final decodedBody = utf8.decode(response.bodyBytes);
+        final data = json.decode(decodedBody);
         setState(() {
-          fortuneMessage = data['fortune']; // 'fortune' 키로 데이터를 가져옴
+          fortuneMessage = data['fortune'];// 'fortune' 키로 데이터를 가져옴          
           isLoading = false;
         });
       } else {
