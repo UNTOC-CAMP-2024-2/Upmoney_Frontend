@@ -23,7 +23,15 @@ class HouseholdPageState extends State<HouseholdPage> {
   final TextEditingController _overlayController = TextEditingController();
   bool _showButtons = false; 
   final List<String> _buttonLabels = ['식비', '교육', '저축', '취미, 여가', '교통', '기타'];
+  Map<DateTime, Map<String, int>> dailyData = {};
 
+
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAllData();
+  }
 
   @override
   void dispose() {
@@ -31,6 +39,40 @@ class HouseholdPageState extends State<HouseholdPage> {
     _descriptionControllers.values.forEach((controller) => controller.dispose());
     super.dispose();
   }
+
+  Future<void> _fetchAllData() async {
+    final token = await getToken();
+    
+    final url = Uri.parse('http://34.47.105.208:8000/dateconsumption/dateconsumption').replace(
+      queryParameters: {
+        'token': token
+      },
+    );
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final decodeData = utf8.decode(response.bodyBytes);
+        final data = json.decode(decodeData);
+        setState(() {
+          dailyData = {
+            for (var item in data)
+            DateTime.parse(item['date']): {
+              'total_income': item['total_income'],
+              'total_consumption': item['total_consumption'],
+            }
+          };
+        });
+      } else {
+        print('Error: ${response.body}');
+      }
+    } catch(e) {
+      print('Network Error: $e');
+    }
+
+  }
+
 
 
   @override
@@ -55,7 +97,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                 _selectedDay = selectedDay;
                 _focusedDay = focusedDay;
                
-              });
+              }); 
 
               DateTime today = DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
               setState(() {
@@ -77,11 +119,72 @@ class HouseholdPageState extends State<HouseholdPage> {
               tablePadding: const EdgeInsets.symmetric(vertical: 8.0),
               cellMargin: const EdgeInsets.all(15.0),
               todayDecoration: BoxDecoration(
-                color: Color(0xffd9efff),
-                shape: BoxShape.circle,
-              )
+                color: Colors.transparent
+              ),
+              todayTextStyle: TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.bold
+              ),
             ),
             calendarBuilders: CalendarBuilders(
+                todayBuilder: (context, date, _) {
+                final normalizedDate = DateTime(date.year, date.month, date.day);
+                if (dailyData.containsKey(normalizedDate)) {
+                  final data = dailyData[normalizedDate]!;
+                  return Container(
+                    padding: EdgeInsets.all(4),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('${date.day}',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                        ),
+                        if (data != null) ...[
+                          if (data['total_income'] != 0)
+                             Text('+${data['total_income']}',
+                            style: TextStyle(fontSize: 10, color: Colors.red),
+                            ),
+                          if (data['total_consumption'] != 0)
+                            Text('-${data['total_consumption']}',
+                            style: TextStyle(fontSize: 10, color: Colors.blue),
+                            ),
+                        ],
+                      ],
+                    ),
+                  );
+                }
+              },
+              defaultBuilder: (context, date, _) {
+                final normalizedDate = DateTime(date.year, date.month, date.day);
+                if (dailyData.containsKey(normalizedDate)) {
+                  final data = dailyData[normalizedDate]!;
+                  return Container(
+                    padding: EdgeInsets.all(4),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('${date.day}',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                        ),
+                        if (data != null) ...[
+                          if (data['total_income'] != 0)
+                             Text('+${data['total_income']}',
+                            style: TextStyle(fontSize: 10, color: Colors.red),
+                            ),
+                          if (data['total_consumption'] != 0)
+                            Text('-${data['total_consumption']}',
+                            style: TextStyle(fontSize: 10, color: Colors.blue),
+                            ),
+                        ],
+                      ],
+                    ),
+                  );
+                }
+              },
               headerTitleBuilder:(context, day) {
                 String formattedHeader = '${_monthName(day.month)} ${day.year}';
                 return Stack(
@@ -135,6 +238,7 @@ class HouseholdPageState extends State<HouseholdPage> {
     ];
     return months[month-1];
   }
+
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('jwt_token');
@@ -197,6 +301,10 @@ class HouseholdPageState extends State<HouseholdPage> {
     print('Network Error: $e');
   }
 }
+
+
+
+
 
 
   void _showCustomDialog(BuildContext context, DateTime selectedDay) async {
@@ -316,7 +424,7 @@ class HouseholdPageState extends State<HouseholdPage> {
   }
 
 
-  void _showKeyboardOverlay(BuildContext context, String consumption_id, Map<String, String> entry,) async {
+  void _showKeyboardOverlay(BuildContext context, String id, Map<String, String> entry,) async {
     _overlayController.text = entry['amount']!;
     final descriptionController = TextEditingController(text: entry['description'] ?? '');
     final token = await getToken();
@@ -445,16 +553,18 @@ class HouseholdPageState extends State<HouseholdPage> {
                                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      if (_buttonLabels[index] == 0) {
-                                        entry['category'] == '1';
-                                      } else if (_buttonLabels[index] == 1){
-                                        entry['category'] == '2';
-                                      } else if (_buttonLabels[index] == 2) {
-                                        entry['category'] == '3';
-                                      } else if (_buttonLabels[index] == 3) {
-                                        entry['category'] == '4';
-                                      } else if (_buttonLabels[index] == 4) {
-                                        entry['category'] == '5';
+                                      if (_buttonLabels[index] == '식비') {
+                                        entry['category'] = '1';
+                                      } else if (_buttonLabels[index] == '교육'){
+                                        entry['category'] = '2';
+                                      } else if (_buttonLabels[index] == '저축') {
+                                        entry['category'] = '3';
+                                      } else if (_buttonLabels[index] == '취미, 여가') {
+                                        entry['category'] = '4';
+                                      } else if (_buttonLabels[index] == '교통') {
+                                        entry['category'] = '5';
+                                      } else if (_buttonLabels[index] == '기타') {
+                                        entry['category'] = '6';
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -475,38 +585,114 @@ class HouseholdPageState extends State<HouseholdPage> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
-                        onPressed: () async {
-                          final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption_id/${entry['id']}').replace(
+                        onPressed:  () async {
+                          final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption/${entry['id']}').replace(
                             queryParameters: {
-                              'token': token
+                              'token': token,
                             },
                           );
+                          final response = await http.delete(url);
+                          if (response.statusCode == 200) {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('삭제되었습니다'),
+                                backgroundColor: Colors.green)
+                            );
+                          }  
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFA4F60),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          padding: const EdgeInsets.all(0),
+                        ), 
+                        child: const Icon(
+                          Icons.telegram_rounded,
+                          size: 30,
+                          color: Colors.white,
+                        )),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          FocusScope.of(context).unfocus();
+                          final token = await getToken();
+                          if (token == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('인증 토큰이 없습니다. 다시 로그인하세요.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+                          if (entry['id'] == null) {
+                            print('Error: Consumption ID is null');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('잘못된 데이터입니다. 다시 시도하세요.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+                          final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption/${entry['id']}').replace(
+                            queryParameters: {
+                              'token': token,
+                            },
+                          );
+
+                          final headers = {
+                            'Content-Type': 'application/json',
+                          };
+
+                          final body = json.encode({
+                            'description': descriptionController.text.trim(),
+                            'amount': int.parse(_overlayController.text),
+                            'category': int.tryParse(entry['category']!) ?? 0,
+                          });
+                          print('Category being sent: ${entry['category']}');
+
+                          try {
                           final response = await http.put(
                             url,
-                            headers: {
-                              'Content-Type': 'application/json',
-                            },
-                            
-                            body: json.encode({
-                              'category': entry['category'],
-                              'amount': _overlayController.text,
-                              'description': descriptionController.text
-                              }),
+                            headers: headers,
+                            body: body
                           );
+
                           if (response.statusCode == 200) {
                             setState(() {
-                            entry['amount'] = _overlayController.text;
+                            entry['amount'] = int.parse(_overlayController.text).toString();
                             entry['description'] = descriptionController.text;
+
                           });
                           Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('수정이 완료되었습니다'),
+                              backgroundColor: Colors.green,
+                              ),
+                            );
                           } else {
                             print('Error: ${response.body}');
-                          ScaffoldMessenger.of(context).showSnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('수정에 실패했습니다. 다시 시도하세요.'),
                               backgroundColor: Colors.red,
                             ),
                           );
+                          }
+                          } catch(e){
+                            print('Network Error: $e');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('네트워크 오류가 발생했습니다. 다시 시도하세요.'),
+                                backgroundColor: Colors.red,
+                                ),
+                            );
                           }
                         },
                         style: ElevatedButton.styleFrom(
