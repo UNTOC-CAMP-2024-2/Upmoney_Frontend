@@ -3,6 +3,8 @@ import 'dart:math';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+// 상태바 색상 조절용
+import 'package:flutter/services.dart';
 
 class GraphPage extends StatefulWidget {
   final VoidCallback onBack; // onBack 콜백 추가
@@ -17,12 +19,20 @@ class GraphPageState extends State<GraphPage> {
   void refreshData() {
     fetchCategoryTotals();
   }
+
   List<double> amounts = [0, 0, 0, 0, 0, 0]; // 초기값 설정
   bool isLoading = true; // 로딩 상태
 
   @override
   void initState() {
     super.initState();
+
+    // 상태바(시스템 영역) 색상을 흰색으로, 아이콘은 어둡게 설정
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.white,
+      statusBarIconBrightness: Brightness.dark,
+    ));
+
     fetchCategoryTotals(); // 초기화 시 데이터를 가져옴
   }
 
@@ -44,10 +54,10 @@ class GraphPageState extends State<GraphPage> {
     }
 
     final url = Uri.parse('http://34.47.105.208:8000/totalcategory').replace(
-                            queryParameters: {
-                              'token':token,
-                            },
-                          );
+      queryParameters: {
+        'token': token,
+      },
+    );
 
     try {
       final response = await http.get(
@@ -88,7 +98,6 @@ class GraphPageState extends State<GraphPage> {
       return const Center(child: CircularProgressIndicator()); // 로딩 상태 표시
     }
 
-  
     final total = amounts.reduce((a, b) => a + b);
     final percentages =
         amounts.map((amount) => (amount / total) * 100).toList();
@@ -98,7 +107,8 @@ class GraphPageState extends State<GraphPage> {
       home: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          // AppBar를 투명 처리하여 상단 회색 영역 제거
+          backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: false,
           title: Row(
@@ -128,7 +138,9 @@ class GraphPageState extends State<GraphPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 40),
+              // 상단 간격 제거로 그래프가 더 위로 올라옴
+              // const SizedBox(height: 40), <- 제거
+
               Center(
                 child: DonutChart(
                   percentages: percentages,
@@ -227,7 +239,10 @@ class DonutChartPainter extends CustomPainter {
   final List<double> percentages;
   final List<Color> colors;
 
-  DonutChartPainter({required this.percentages, required this.colors});
+  DonutChartPainter({
+    required this.percentages,
+    required this.colors,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -252,11 +267,12 @@ class DonutChartPainter extends CustomPainter {
       startAngle += sweepAngle;
     }
 
+    // 가운데를 흰색으로 채워서 도넛 형태로 만들기
     paint.color = Colors.white;
     paint.style = PaintingStyle.fill;
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
-      size.width / 3.0, // 작은 원의 반지름 비율 (조정된 값)
+      size.width / 3.0, // 작은 원의 반지름 비율
       paint,
     );
   }
@@ -287,49 +303,49 @@ class LegendItem extends StatelessWidget {
         children: [
           // 왼쪽 원 (왼쪽 정렬)
           Container(
-            width: 24, // 원 크기 증가
+            width: 24, // 원 크기
             height: 24,
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(width: 12), // 원과 텍스트 사이 간격 증가
+          const SizedBox(width: 12), // 원과 텍스트 사이 간격
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // 제목 (가운데 정렬)
+                // 제목
                 Expanded(
                   child: Center(
                     child: Text(
                       title,
                       style: const TextStyle(
-                        fontSize: 18, // 제목 크기
-                        fontWeight: FontWeight.bold, // 세미볼드
-                        color: Color(0xFF767676), // 텍스트 색상 변경
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF767676),
                       ),
                     ),
                   ),
                 ),
-                // 금액 (가운데 정렬, 강조)
+                // 금액
                 Expanded(
                   child: Center(
                     child: RichText(
                       text: TextSpan(
                         text: amount.split('원')[0], // 숫자 부분
                         style: const TextStyle(
-                          fontSize: 22, // 금액 숫자 크기 더 증가
-                          fontWeight: FontWeight.bold, // 굵게
-                          color: Color(0xFF767676), // 텍스트 색상 변경
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF767676),
                         ),
                         children: const [
                           TextSpan(
                             text: ' 원', // "원" 텍스트
                             style: TextStyle(
-                              fontSize: 18, // "원"의 크기 조정
-                              fontWeight: FontWeight.w400, // 일반 굵기
-                              color: Color(0xFF767676), // 텍스트 색상 변경
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF767676),
                             ),
                           ),
                         ],
