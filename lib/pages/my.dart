@@ -91,6 +91,7 @@ class _MyPageState extends State<MyPage> {
                 ),
               ),
               const Divider(thickness: 1),
+              const SizedBox(height:16),
               Text(
                 "이름: ${userData!['name']}",
                 style: const TextStyle(fontSize: 18),
@@ -206,7 +207,7 @@ class _MyPageState extends State<MyPage> {
                           "내 정보 확인",
                           style: TextStyle(
                             fontSize: 20,
-                            color: Colors.blue, // 클릭 가능하게 파란색으로 변경
+                            color: Color.fromARGB(255, 70, 74, 77), // 클릭 가능하게 파란색으로 변경
                             decoration: TextDecoration.underline, // 밑줄 추가
                           ),
                         ),
@@ -218,7 +219,7 @@ class _MyPageState extends State<MyPage> {
             ),
             const SizedBox(height: 15),
 
-            // Section 3: 금전운 (기존 코드 유지)
+            // Section 3: 금전운 
             Container(
               width: double.infinity,
               height: 320,
