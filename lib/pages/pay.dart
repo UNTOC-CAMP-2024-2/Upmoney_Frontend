@@ -105,13 +105,15 @@ class PayPageState extends State<PayPage> {
   List<dynamic> fiveConsumptions = [];
   Map<String, dynamic>? recentConsumption;
 
-
+  
   @override
   void initState() {
     super.initState();
     fetchDifference(dataOptions[selectedOption]!['classify_id']);
     fetchRecentConsumption(); // PayPage 시작 시 최근 소비 데이터 가져오기
+    fetchMostRecentConsumption();
   }
+  
 
   Future<void> fetchRecentConsumption() async {
     final token = await getToken();
@@ -144,9 +146,51 @@ class PayPageState extends State<PayPage> {
         final decodedData = utf8.decode(response.bodyBytes);
         final List<dynamic> data = json.decode(decodedData);
         if (data.isNotEmpty) {
-          setState(() {
-            recentConsumption = data[0]; // 첫 번째 소비 데이터 사용
+          setState(() { // 첫 번째 소비 데이터 사용
             fiveConsumptions = data;
+          });
+        }
+      } else {
+        throw Exception('Failed to fetch data: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching recent consumption: $e');
+    }
+  }
+
+  Future<void> fetchMostRecentConsumption() async {
+    final token = await getToken();
+    print('Retrieved Token: $token'); // null이면 저장 과정에서 문제가 있음
+
+    if (token == null) {
+     ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('토큰이 없습니다. 다시 로그인하세요.'),
+        backgroundColor: Colors.red,
+      ),
+     );
+     return;
+    }
+
+    final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption/most_recent_consumption').replace(
+                            queryParameters: {
+                              'token':token,
+                            },
+                          );
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+        'Content-Type': 'application/json',
+      },
+      );
+
+      if (response.statusCode == 200) {
+        final decodedData = utf8.decode(response.bodyBytes);
+        final data = json.decode(decodedData);
+        if (data.isNotEmpty) {
+          setState(() {
+            recentConsumption = data; // 첫 번째 소비 데이터 사용
           });
         }
       } else {
@@ -198,6 +242,7 @@ class PayPageState extends State<PayPage> {
           // 새로고침 시 데이터 갱신
           await fetchDifference(dataOptions[selectedOption]!['classify_id']);
           await fetchRecentConsumption();
+          await fetchMostRecentConsumption();
         },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
