@@ -15,6 +15,7 @@ class PayPageState extends State<PayPage> {
   void refreshData() {
     fetchDifference(dataOptions[selectedOption]!['classify_id']);
     fetchRecentConsumption();
+    fetchMostRecentConsumption();
   }
   
   String selectedOption = '식비';
@@ -372,10 +373,10 @@ class PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: const AlignmentDirectional(0, 0.635),
+                          alignment: const AlignmentDirectional(0, 0.660),
                           child: Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
-                                0, 0, 145, 0),
+                                0, 0, 140, 0),
                             child: Text(
                               dataOptions[selectedOption]!['text1'],
                               textAlign: TextAlign.center,
@@ -388,7 +389,7 @@ class PayPageState extends State<PayPage> {
                           ),
                         ),
                         Align(
-                          alignment: const AlignmentDirectional(0, 0.825),
+                          alignment: const AlignmentDirectional(0, 0.82),
                           child: Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
                                 0, 0, 140, 0),
