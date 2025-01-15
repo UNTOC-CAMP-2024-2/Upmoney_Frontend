@@ -324,7 +324,7 @@ void initState() {
             child: Stack(
               children: [
                 Positioned(
-                  right: 0,
+                  right: 10,
                   top: 120.0,
                   child: Container(
                     width: 300.0, // 텍스트 영역 크기 조정

@@ -356,6 +356,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 15),
+                const Text(
+                  "나이 및 성별 선택은 소비 분석을 위한 필수 정보이니 반드시 입력해 주세요.",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color.fromARGB(255, 169, 169, 169),
+                  ),
+                ),
               ],
             ),
           ),
