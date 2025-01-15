@@ -146,22 +146,22 @@ class GraphPageState extends State<GraphPage> {
                           ),
                           LegendItem(
                             color: const Color(0xFF9FC3B2),
-                            title: '저축',
+                            title: '교육',
                             amount: formatWithCommas(amounts[1]),
                           ),
                           LegendItem(
                             color: const Color(0xFFF9CF64),
-                            title: '여가',
+                            title: '저축',
                             amount: formatWithCommas(amounts[2]),
                           ),
                           LegendItem(
                             color: const Color(0xFFF5F1E0),
-                            title: '교통',
+                            title: '취미',
                             amount: formatWithCommas(amounts[3]),
                           ),
                           LegendItem(
                             color: const Color(0xFFD9E9A3),
-                            title: '교육',
+                            title: '교통',
                             amount: formatWithCommas(amounts[4]),
                           ),
                           LegendItem(
