@@ -3,11 +3,10 @@ import 'dart:math';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-// 상태바 색상 조절용
 import 'package:flutter/services.dart';
 
 class GraphPage extends StatefulWidget {
-  final VoidCallback onBack; // onBack 콜백 추가
+  final VoidCallback onBack;
 
   const GraphPage({super.key, required this.onBack});
 
@@ -20,20 +19,17 @@ class GraphPageState extends State<GraphPage> {
     fetchCategoryTotals();
   }
 
-  List<double> amounts = [0, 0, 0, 0, 0, 0]; // 초기값 설정
-  bool isLoading = true; // 로딩 상태
+  List<double> amounts = [0, 0, 0, 0, 0, 0];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-
-    // 상태바(시스템 영역) 색상을 흰색으로, 아이콘은 어둡게 설정
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.white,
       statusBarIconBrightness: Brightness.dark,
     ));
-
-    fetchCategoryTotals(); // 초기화 시 데이터를 가져옴
+    fetchCategoryTotals();
   }
 
   Future<String?> getToken() async {
@@ -71,7 +67,6 @@ class GraphPageState extends State<GraphPage> {
         final data = json.decode(response.body);
         setState(() {
           amounts = List.generate(6, (index) {
-            // 각 카테고리의 소비 데이터를 가져옴
             final categoryIndex = index + 1;
             final categoryData = data.firstWhere(
               (element) => element['category_id'] == categoryIndex,
@@ -79,7 +74,7 @@ class GraphPageState extends State<GraphPage> {
             );
             return categoryData['total_consumption'].toDouble();
           });
-          isLoading = false; // 데이터 로드 완료
+          isLoading = false;
         });
       } else {
         throw Exception('Failed to fetch data: ${response.body}');
@@ -87,7 +82,7 @@ class GraphPageState extends State<GraphPage> {
     } catch (e) {
       print('Error fetching category totals: $e');
       setState(() {
-        isLoading = false; // 에러 발생 시 로딩 종료
+        isLoading = false;
       });
     }
   }
@@ -95,7 +90,7 @@ class GraphPageState extends State<GraphPage> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator()); // 로딩 상태 표시
+      return const Center(child: CircularProgressIndicator());
     }
 
     final total = amounts.reduce((a, b) => a + b);
@@ -106,109 +101,93 @@ class GraphPageState extends State<GraphPage> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          // AppBar를 투명 처리하여 상단 회색 영역 제거
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: false,
-          title: Row(
-            children: [
-              IconButton(
+        body: Stack(
+          children: [
+            RefreshIndicator(
+              onRefresh: () async {
+                await fetchCategoryTotals();
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 50), // 원그래프와 화면 상단 사이 간격 추가
+                    Center(
+                      child: DonutChart(
+                        percentages: percentages,
+                        colors: const [
+                          Color(0xFFED6D4A),
+                          Color(0xFF9FC3B2),
+                          Color(0xFFF9CF64),
+                          Color(0xFFF5F1E0),
+                          Color(0xFFD9E9A3),
+                          Color(0xFFA1CA7A),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 50),
+                    const Divider(
+                      thickness: 1.5,
+                      color: Color.fromARGB(255, 94, 94, 94),
+                      indent: 32,
+                      endIndent: 32,
+                    ),
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          LegendItem(
+                            color: const Color(0xFFED6D4A),
+                            title: '식비',
+                            amount: formatWithCommas(amounts[0]),
+                          ),
+                          LegendItem(
+                            color: const Color(0xFF9FC3B2),
+                            title: '교육',
+                            amount: formatWithCommas(amounts[1]),
+                          ),
+                          LegendItem(
+                            color: const Color(0xFFF9CF64),
+                            title: '저축',
+                            amount: formatWithCommas(amounts[2]),
+                          ),
+                          LegendItem(
+                            color: const Color(0xFFF5F1E0),
+                            title: '취미',
+                            amount: formatWithCommas(amounts[3]),
+                          ),
+                          LegendItem(
+                            color: const Color(0xFFD9E9A3),
+                            title: '교통',
+                            amount: formatWithCommas(amounts[4]),
+                          ),
+                          LegendItem(
+                            color: const Color(0xFFA1CA7A),
+                            title: '기타',
+                            amount: formatWithCommas(amounts[5]),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              top: 20,
+              left: 10,
+              child: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 color: const Color.fromARGB(218, 13, 40, 121),
                 iconSize: 30,
-                onPressed: widget.onBack, // onBack 콜백 호출
+                onPressed: widget.onBack,
               ),
-              const SizedBox(width: 10),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '',
-                  style: TextStyle(
-                    color: Color.fromARGB(218, 13, 40, 121),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-        body: RefreshIndicator(
-          onRefresh: () async {
-          await fetchCategoryTotals(); // 새로고침 시 데이터 갱신
-          },
-          child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // 상단 간격 제거로 그래프가 더 위로 올라옴
-              // const SizedBox(height: 40), <- 제거
-
-              Center(
-                child: DonutChart(
-                  percentages: percentages,
-                  colors: const [
-                    Color(0xFFED6D4A),
-                    Color(0xFF9FC3B2),
-                    Color(0xFFF9CF64),
-                    Color(0xFFF5F1E0),
-                    Color(0xFFD9E9A3),
-                    Color(0xFFA1CA7A),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 50),
-              const Divider(
-                thickness: 1.5,
-                color: Color.fromARGB(255, 94, 94, 94),
-                indent: 32,
-                endIndent: 32,
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    LegendItem(
-                      color: const Color(0xFFED6D4A),
-                      title: '식비',
-                      amount: formatWithCommas(amounts[0]),
-                    ),
-                    LegendItem(
-                      color: const Color(0xFF9FC3B2),
-                      title: '여가',
-                      amount: formatWithCommas(amounts[1]),
-                    ),
-                    LegendItem(
-                      color: const Color(0xFFF9CF64),
-                      title: '교육',
-                      amount: formatWithCommas(amounts[2]),
-                    ),
-                    LegendItem(
-                      color: const Color(0xFFF5F1E0),
-                      title: '저축',
-                      amount: formatWithCommas(amounts[3]),
-                    ),
-                    LegendItem(
-                      color: const Color(0xFFD9E9A3),
-                      title: '교통',
-                      amount: formatWithCommas(amounts[4]),
-                    ),
-                    LegendItem(
-                      color: const Color(0xFFA1CA7A),
-                      title: '기타',
-                      amount: formatWithCommas(amounts[5]),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
       ),
     );
   }
@@ -273,12 +252,11 @@ class DonutChartPainter extends CustomPainter {
       startAngle += sweepAngle;
     }
 
-    // 가운데를 흰색으로 채워서 도넛 형태로 만들기
     paint.color = Colors.white;
     paint.style = PaintingStyle.fill;
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
-      size.width / 3.0, // 작은 원의 반지름 비율
+      size.width / 3.0,
       paint,
     );
   }
@@ -304,24 +282,22 @@ class LegendItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12), // 간격 조정
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
-          // 왼쪽 원 (왼쪽 정렬)
           Container(
-            width: 24, // 원 크기
+            width: 24,
             height: 24,
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(width: 12), // 원과 텍스트 사이 간격
+          const SizedBox(width: 12),
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // 제목
                 Expanded(
                   child: Center(
                     child: Text(
@@ -334,12 +310,11 @@ class LegendItem extends StatelessWidget {
                     ),
                   ),
                 ),
-                // 금액
                 Expanded(
                   child: Center(
                     child: RichText(
                       text: TextSpan(
-                        text: amount.split('원')[0], // 숫자 부분
+                        text: amount.split('원')[0],
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -347,7 +322,7 @@ class LegendItem extends StatelessWidget {
                         ),
                         children: const [
                           TextSpan(
-                            text: ' 원', // "원" 텍스트
+                            text: ' 원',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w400,
