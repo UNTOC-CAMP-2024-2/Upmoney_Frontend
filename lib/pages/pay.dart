@@ -13,6 +13,7 @@ class PayPage extends StatefulWidget {
 
 class PayPageState extends State<PayPage> {
   void refreshData() {
+    print("PayPage refreshData called");
     fetchUserinfo();
     fetchDifference(dataOptions[selectedOption]!['classify_id']);
     fetchRecentConsumption();
@@ -527,7 +528,7 @@ class PayPageState extends State<PayPage> {
                             child: Text(
                               recentConsumption != null
                                   ? recentConsumption!['description']
-                                  : '데이터 없음',
+                                  : '',
                               textAlign: TextAlign.left,
                               softWrap: false,
                               style: const TextStyle(
@@ -563,7 +564,7 @@ class PayPageState extends State<PayPage> {
                             child: Text(
                               recentConsumption != null
                                   ? '${recentConsumption!['amount']}'
-                                  : '0',
+                                  : '',
                               textAlign: TextAlign.right,
                               style: const TextStyle(
                                 color: Colors.black,
@@ -597,7 +598,7 @@ class PayPageState extends State<PayPage> {
                             child: Text(
                               recentConsumption != null
                                   ? mapCategoryToOption(recentConsumption!['category'])
-                                  : '카테고리 없음',
+                                  : '',
                               textAlign: TextAlign.left,
                               style: const TextStyle(
                                 color: Colors.black,
