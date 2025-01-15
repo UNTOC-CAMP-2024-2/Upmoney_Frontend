@@ -29,7 +29,7 @@ class HouseholdPageState extends State<HouseholdPage> {
   Map<DateTime, TextEditingController> _descriptionControllers = {}; 
   final TextEditingController _overlayController = TextEditingController();
   bool _showButtons = false; 
-  final List<String> _buttonLabels = ['식비', '교육', '저축', '취미, 여가', '교통', '기타'];
+  final List<String> _buttonLabels = ['식비', '교육', '쇼핑', '취미', '교통', '기타'];
   Map<DateTime, Map<String, int>> dailyData = {};
 
 
@@ -86,7 +86,8 @@ class HouseholdPageState extends State<HouseholdPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFFCFCFC),
-      body: Container(
+      body: Center(
+        child: Container(
         width: 503,
         height: 600,
         padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
@@ -224,6 +225,7 @@ class HouseholdPageState extends State<HouseholdPage> {
             ),
             ),
         ),
+      ),
       ),
     );
   }
@@ -381,16 +383,19 @@ class HouseholdPageState extends State<HouseholdPage> {
                                 entry, 
                                 );
                             },
+                            child: Padding(padding: EdgeInsets.only(left: 30),   
                             child: Container(
+                            width: 300,
+                            height: 58,
                             decoration: BoxDecoration(
-                            color: entry['category'] == '0' ? Colors.red : Colors.blue,
-                            borderRadius: BorderRadius.circular(8),
+                            color: entry['category'] == '0' ? Color(0xFFFFD9D9) : Color(0xFFD9EFFF),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           margin: EdgeInsets.symmetric(vertical: 5),
                           padding: EdgeInsets.all(10),
                           child: Stack(
                             children: [
-                              Padding(padding: EdgeInsetsDirectional.fromSTEB(50, 15, 0, 0),
+                              Padding(padding: EdgeInsetsDirectional.fromSTEB(50, 9, 0, 0),
                               child: Text(
                                 entry['description']!,
                                 style: TextStyle(
@@ -402,28 +407,45 @@ class HouseholdPageState extends State<HouseholdPage> {
                               Align(
                                 alignment: AlignmentDirectional(0.74, 0.09),
                                 child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
+                                  padding: EdgeInsetsDirectional.fromSTEB(0, 0, 12, 0),
                                   child: Container(
-                                    width: 150,
                                     child: Text(
                                       '${entry['amount'] ?? '0'}원',
                                       style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
+                              Align(
+                                alignment: AlignmentDirectional(-1.02, 0),
+                                child: Container(
+                                  width: 14,
+                                  height: 58,
+                                  decoration: BoxDecoration(
+                                    color: entry['category'] == '0' ? Color(0xFFFF5C5C) : Color(0xFF407BFF),
+                                    borderRadius: BorderRadius.only(
+                                      bottomLeft: Radius.circular(10),
+                                      bottomRight: Radius.circular(0),
+                                      topLeft: Radius.circular(10),
+                                      topRight: Radius.circular(0),
+                                    )
+                                  ),
+                                ),
+                              ),  
                             ],
                           ),
                         ),
+                            ),
                           );
                         }).toList(),
                       ],
                     ),
                   ],
-                ),),
+                ),
+              ),
             ),
           ),
         );
@@ -540,7 +562,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                    Row(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.text_rotation_angledown_sharp, size: 40, color: Color(0xFFFA4F60)),
+                        icon: Icon(Icons.category_rounded, size: 35, color: Color(0xFFFA4F60)),
                         onPressed: () {
                           modalSetState(() {
                             _showButtons = !_showButtons;
@@ -551,22 +573,23 @@ class HouseholdPageState extends State<HouseholdPage> {
                       if (_showButtons)
                         Expanded(
                           child: Container(
-                            height: 50,
+                            width: 200,
+                            height: 40,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               itemCount: _buttonLabels.length,
                               itemBuilder: (context, index) {
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
                                   child: ElevatedButton(
                                     onPressed: () {
                                       if (_buttonLabels[index] == '식비') {
                                         entry['category'] = '1';
                                       } else if (_buttonLabels[index] == '교육'){
                                         entry['category'] = '2';
-                                      } else if (_buttonLabels[index] == '저축') {
+                                      } else if (_buttonLabels[index] == '쇼핑') {
                                         entry['category'] = '3';
-                                      } else if (_buttonLabels[index] == '취미, 여가') {
+                                      } else if (_buttonLabels[index] == '취미') {
                                         entry['category'] = '4';
                                       } else if (_buttonLabels[index] == '교통') {
                                         entry['category'] = '5';
@@ -575,11 +598,12 @@ class HouseholdPageState extends State<HouseholdPage> {
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      minimumSize: const Size(100, 40),
+                                      iconColor: Colors.white,
+                                      minimumSize: const Size(70, 30),
                                     ),
                                     child: Text(
                                       _buttonLabels[index],
-                                      style: const TextStyle(fontSize: 14),
+                                      style: const TextStyle(fontSize: 14, color: Color(0xFFFA4F60),fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                 );
@@ -590,7 +614,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                    Spacer(),
                     const SizedBox(height: 16),
                     Align(
-                      alignment: Alignment.centerRight,
+                      alignment: AlignmentDirectional(-1.0, 0),
                       child: ElevatedButton(
                         onPressed:  () async {
                           final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption/${entry['id']}').replace(
@@ -623,7 +647,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                           padding: const EdgeInsets.all(0),
                         ), 
                         child: const Icon(
-                          Icons.telegram_rounded,
+                          Icons.delete_forever_rounded,
                           size: 30,
                           color: Colors.white,
                         )),

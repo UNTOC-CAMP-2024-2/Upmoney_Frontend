@@ -289,7 +289,7 @@ class _CustomDialogState extends State<CustomDialog> {
                           alignment: const AlignmentDirectional(-0.45, -0.5),
                           child: Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
-                              55, 0, 10, 10),
+                            60, 0, 10, 10),
                             child: SizedBox(
                               width: 200,
                               child: TextFormField(
@@ -411,14 +411,14 @@ class _CustomDialogState extends State<CustomDialog> {
                     category = 2;
                   }
                 }),
-                _buildCheckboxWithText(-0.86, 0.78, checkboxValue3, '저축',
+                _buildCheckboxWithText(-0.86, 0.78, checkboxValue3, '쇼핑',
                     (newValue) {
                   setState(() => checkboxValue3 = newValue!);
                   if (checkboxValue3) {
                     category = 3;
                   }
                 }),
-                _buildCheckboxWithText(0.23, 0.25, checkboxValue4, '취미, 여가',
+                _buildCheckboxWithText(0.03, 0.25, checkboxValue4, '취미',
                     (newValue) {
                   setState(() => checkboxValue4 = newValue!);
                   if (checkboxValue4) {
