@@ -275,7 +275,7 @@ class PayPageState extends State<PayPage> {
       case 2:
         return '교육';
       case 3:
-        return '저축';
+        return '쇼핑';
       case 4:
         return '여가';
       case 5:
