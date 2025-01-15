@@ -270,11 +270,11 @@ class _SignUpPageState extends State<SignUpPage> {
                           left: 12,
                           top: 3, // 라벨을 조금 더 위로 올리기
                           child: Container(
-                            color: const Color(0xffF4F4FE), // 배경색
+                            color: Colors.white, // 배경색
                             padding: const EdgeInsets.symmetric(horizontal: 4.0),
                             child: const Text(
                               '나이',
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                              style: TextStyle(fontSize: 12, color: Color(0xFF767676)),
                             ),
                           ),
                         ),
@@ -311,11 +311,11 @@ class _SignUpPageState extends State<SignUpPage> {
                           left: 12,
                           top: 3, // 텍스트가 입력 필드와 겹치지 않도록 수정
                           child: Container(
-                            color: const Color(0xffF4F4FE), // 배경색
+                            color: Colors.white, // 배경색
                             padding: const EdgeInsets.symmetric(horizontal: 4.0),
                             child: const Text(
                               '성별 선택',
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                              style: TextStyle(fontSize: 12, color: Color(0xFF767676)),
                             ),
                           ),
                         ),
@@ -342,9 +342,16 @@ class _SignUpPageState extends State<SignUpPage> {
                           signUp();
                         }
                       },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xff081f5c),
+                        foregroundColor: Colors.white,
+                      ),
                       child: const Text(
                         "회원가입",
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
