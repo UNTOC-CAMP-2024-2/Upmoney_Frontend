@@ -184,10 +184,10 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("회원가입"),
-        backgroundColor: const Color(0xffF4F4FE),
+        backgroundColor: Colors.white,
         elevation: 0,
       ),
-      backgroundColor: const Color(0xffF4F4FE),
+      backgroundColor: Colors.white,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

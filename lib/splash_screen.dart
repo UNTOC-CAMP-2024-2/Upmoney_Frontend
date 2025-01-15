@@ -15,7 +15,7 @@ class SplashScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xffF4F4FE),
+      backgroundColor: const Color(0xFFDFE8FF),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -23,7 +23,7 @@ class SplashScreen extends StatelessWidget {
             // 로고 이미지
             const Icon(
               Icons.monetization_on,
-              size: 100,
+              size: 110,
               color: const Color(0xFF081F5C),
             ),
             const SizedBox(height: 16),
@@ -31,7 +31,7 @@ class SplashScreen extends StatelessWidget {
             const Text(
               "UPmoney",
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFF081F5C),
               ),

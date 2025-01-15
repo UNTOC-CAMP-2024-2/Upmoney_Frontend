@@ -254,7 +254,7 @@ void initState() {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView( // 전체 스크롤 가능하게 변경
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -267,7 +267,7 @@ void initState() {
                 children: [
                   const Icon(
                     Icons.account_circle,
-                    size: 130,
+                    size: 100, // 아이콘 크기 축소
                     color: Colors.grey,
                   ),
                   const SizedBox(width: 16),
@@ -278,27 +278,27 @@ void initState() {
                       const Text(
                         "반갑습니다!",
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 20, // 텍스트 크기 축소
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 5),
                       Text(
                         userData != null
                             ? "${userData!['name']} 님"
-                            : "사용자 이름 님", // 사용자 이름 표시
+                            : "사용자 이름 님",
                         style: const TextStyle(
-                          fontSize: 30,
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
                       GestureDetector(
-                        onTap: () => fetchUserInfo(showModalOnSuccess: true), // 버튼 클릭 시 모달 호출
+                        onTap: () => fetchUserInfo(showModalOnSuccess: true),
                         child: const Text(
                           "내 정보 확인",
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             color: Color.fromARGB(255, 70, 74, 77),
                             decoration: TextDecoration.underline,
                           ),
@@ -311,32 +311,30 @@ void initState() {
             ),
             const SizedBox(height: 15),
 
-            // Section 3: 금전운 
+            // Section 2: 금전운 
           Container(
             width: double.infinity,
             height: 320,
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/monetaryluck_Tree.png'),
-                fit: BoxFit.fitHeight, // 이미지를 컨테이너 크기에 맞게 조정
+                fit: BoxFit.fitHeight,
               ),
             ),
             child: Stack(
               children: [
-                // 금전운 텍스트
                 Positioned(
-                  right: 0, // 오른쪽 여백
-                  top: 120.0, // 위쪽 여백
+                  right: 0,
+                  top: 120.0,
                   child: Container(
-                    width: 379.0,
-                    padding: const EdgeInsets.all(8.0), // 텍스트 주위 여백
-                    // color: Colors.white.withOpacity(0.8), // 텍스트 배경
+                    width: 300.0, // 텍스트 영역 크기 조정
+                    padding: const EdgeInsets.all(8.0),
                     child: isLoading
-                        ? const CircularProgressIndicator() // 로딩 중
+                        ? const CircularProgressIndicator()
                         : errorMessage != null
                             ? Text(
                                 errorMessage!,
-                                style: const TextStyle(fontSize: 18, color: Colors.red),
+                                style: const TextStyle(fontSize: 16, color: Colors.red),
                                 textAlign: TextAlign.center,
                               )
                             : Text(
@@ -354,12 +352,12 @@ void initState() {
             ),
           ),
 
-            // Section 4: 공지사항
+            // Section 3: 공지사항list
             Padding(
-              padding: const EdgeInsets.only(top: 16.0),
+              padding: const EdgeInsets.only(top: 8.0),
               child: ListView(
-                shrinkWrap: true, // 스크롤 충돌 방지
-                physics: const NeverScrollableScrollPhysics(), // ListView 내부 스크롤 비활성화
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
                   _buildListTile(
                     context,
@@ -375,29 +373,28 @@ void initState() {
                     context,
                     "앱 사용방법",
                     const GuidePage(title: "앱 사용방법"),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: logout, // 로그아웃 함수 호출
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red, // 붉은 배경
-                foregroundColor: Colors.white, // 흰 글씨
-                minimumSize: const Size(double.infinity, 50), // 버튼 크기
-                textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                    ),
+                  ],
                 ),
               ),
-              child: isLoading
-                  ? const CircularProgressIndicator(
-                      color: Colors.white, // 로딩 스피너 색상
-                    )
-                  : const Text("로그아웃하기"),
-              ),
+              // Section 4: 로그아웃 버튼
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: logout,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 50),
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                child: isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text("로그아웃하기"),
+                ),
             ),
           ],
         ),
@@ -412,19 +409,47 @@ void initState() {
     Widget nextpage, {
     bool isLastItem = false,
   }) {
-    return Column(
-      children: [
-        ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+    IconData? _getIconForTitle(String title) {
+      // 제목에 따라 적절한 아이콘 반환
+      switch (title) {
+        case "금전운 안내서":
+          return Icons.monetization_on; // 금전운 아이콘
+        case "공지사항":
+          return Icons.announcement; // 공지사항 아이콘
+        case "앱 사용방법":
+          return Icons.help_outline; // 도움말 아이콘
+        default:
+          return Icons.info; // 기본 아이콘
+      }
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0), // 간격 조정
+      child: Card(
+        elevation: 3, // 그림자 효과
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10), // 둥근 모서리
+        ),
+        color: const Color.fromARGB(255, 255, 255, 255),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0), // 패딩 축소
+          leading: Icon(
+            _getIconForTitle(title),
+            size: 24, // 아이콘 크기
+            color: Color(0xFF081F5C), // 아이콘 색상
+          ),
           title: Text(
             title,
             style: const TextStyle(
-              fontSize: 25,
+              fontSize: 20, // 텍스트 크기 줄임
               fontWeight: FontWeight.w500,
             ),
           ),
-          trailing: const Icon(Icons.chevron_right),
+          trailing: const Icon(
+            Icons.chevron_right,
+            size: 24, // 아이콘 크기 축소
+            color: Colors.grey,
+          ),
           onTap: () {
             Navigator.push(
               context,
@@ -432,13 +457,7 @@ void initState() {
             );
           },
         ),
-        if (!isLastItem)
-          const Divider(
-            thickness: 1.0,
-            color: Colors.grey,
-            height: 0,
-          ),
-      ],
+      ),
     );
   }
 }
