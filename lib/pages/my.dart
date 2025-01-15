@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_3/splash_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -181,6 +182,74 @@ void initState() {
     }
   }
 
+  Future<void> logout() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      // 1) SharedPreferences에서 토큰 가져오기
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('jwt_token');
+      if (token == null) {
+        throw Exception('로그인 정보가 없습니다.');
+      }
+
+      // 2) 로그아웃 API 호출
+      final url = Uri.parse('http://34.47.105.208:8000/auth/logout');
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Accept': 'application/json; charset=utf-8',
+          'Authorization': 'Bearer $token', // 요청 헤더에 토큰 포함
+        },
+      );
+
+      // 3) 응답 상태 처리
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        // 로그아웃 성공: 저장된 사용자 정보 삭제
+        await prefs.clear();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const SplashScreen()),
+        );
+      } else if (response.statusCode == 401) {
+        // 인증 실패: 저장된 사용자 정보 삭제 및 알림 표시
+        await prefs.clear();
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('인증 실패'),
+            content: const Text('인증 정보가 유효하지 않습니다. 다시 로그인해주세요.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const SplashScreen()),
+                  );
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        // 기타 서버 오류
+        throw Exception('서버 오류: ${response.statusCode} - ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = '로그아웃 중 오류가 발생했습니다: $e';
+        isLoading = false;
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  } 
+
   // 2. UI 빌드
   @override
   Widget build(BuildContext context) {
@@ -256,7 +325,7 @@ void initState() {
               children: [
                 // 금전운 텍스트
                 Positioned(
-                  right: 10, // 오른쪽 여백
+                  right: 0, // 오른쪽 여백
                   top: 120.0, // 위쪽 여백
                   child: Container(
                     width: 379.0,
@@ -308,6 +377,26 @@ void initState() {
                     const GuidePage(title: "앱 사용방법"),
                   ),
                 ],
+              ),
+            ),
+            Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: logout, // 로그아웃 함수 호출
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red, // 붉은 배경
+                foregroundColor: Colors.white, // 흰 글씨
+                minimumSize: const Size(double.infinity, 50), // 버튼 크기
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              child: isLoading
+                  ? const CircularProgressIndicator(
+                      color: Colors.white, // 로딩 스피너 색상
+                    )
+                  : const Text("로그아웃하기"),
               ),
             ),
           ],
