@@ -4,16 +4,23 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'pay.dart';
 
 
-class HouseholdPage extends StatefulWidget {
-  const HouseholdPage({super.key});
+class HouseholdPage extends StatefulWidget { // 추가
+  const HouseholdPage({super.key}); // 추가
 
   @override
   State<HouseholdPage> createState() => HouseholdPageState();
 }
 
 class HouseholdPageState extends State<HouseholdPage> {
+  final GlobalKey<PayPageState> payPageKey = GlobalKey<PayPageState>();
+  void refreshData() {
+    setState((){
+      _fetchAllData();
+    });
+  }
 
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
@@ -593,7 +600,14 @@ class HouseholdPageState extends State<HouseholdPage> {
                           );
                           final response = await http.delete(url);
                           if (response.statusCode == 200) {
+                            while (Navigator.canPop(context)) {
                             Navigator.pop(context);
+                          }
+                            refreshData(); // household.dart 새로고침
+                            payPageKey.currentState?.refreshData(); // pay.dart 새로고침
+                            print("PayPage refreshed!");
+
+                            _showCustomDialog(context, _selectedDay);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('삭제되었습니다'),
@@ -669,7 +683,12 @@ class HouseholdPageState extends State<HouseholdPage> {
                             entry['description'] = descriptionController.text;
 
                           });
-                          Navigator.pop(context);
+                          while (Navigator.canPop(context)) Navigator.pop(context);
+                          refreshData(); // household.dart 새로고침
+                          payPageKey.currentState?.refreshData(); // pay.dart 새로고침
+                          
+                          _showCustomDialog(context, _selectedDay);
+                          
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('수정이 완료되었습니다'),
@@ -740,9 +759,5 @@ class HouseholdPageState extends State<HouseholdPage> {
  
 
 }
-
-
-
-
 }
 

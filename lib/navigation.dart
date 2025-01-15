@@ -23,6 +23,7 @@ class _NavigationState extends State<Navigation> {
   int selectIndex = 0;
   final GlobalKey<PayPageState> payPageKey = GlobalKey<PayPageState>();
   final GlobalKey<GraphPageState> graphPageKey = GlobalKey<GraphPageState>();
+  final GlobalKey<HouseholdPageState> householdPageKey = GlobalKey<HouseholdPageState>();
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +46,10 @@ class _NavigationState extends State<Navigation> {
         child: NavigationBar(
           selectedIndex: selectIndex,
           onDestinationSelected: (value) async {
+            if (value == 0) { // 소비페이지 버튼 클릭
+              // 소비페이지 새로고침
+              payPageKey.currentState?.refreshData();
+            }
             if (value == 2) { // "+" 아이콘 클릭 시
               showDialog(
                 context: context,
@@ -53,6 +58,7 @@ class _NavigationState extends State<Navigation> {
                     // 새로고침 콜백
                     payPageKey.currentState?.refreshData();
                     graphPageKey.currentState?.refreshData();
+                    householdPageKey.currentState?.refreshData();
                   },
                 ),
               );
@@ -107,7 +113,7 @@ class _NavigationState extends State<Navigation> {
           index: selectIndex,
           children: [
             PayPage(key: payPageKey),
-            HouseholdPage(),
+            HouseholdPage(key: householdPageKey),
             GraphPage(key: graphPageKey, onBack: () => setState(() {})),
             ScholarshipPage(),
             MyPage(),
