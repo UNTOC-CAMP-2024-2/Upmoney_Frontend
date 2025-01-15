@@ -67,10 +67,9 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("로그인"),
-        backgroundColor: const Color(0xffF4F4FE),
+        backgroundColor:Colors.white,
       ),
-      backgroundColor: const Color(0xffF4F4FE),
+      backgroundColor:Colors.white,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -78,6 +77,31 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const Icon(
+                  Icons.monetization_on,
+                  size:110,
+                  color:const Color(0xFF081F5C),
+                ),
+                const SizedBox(height: 5),
+
+                const Text(
+                  "UPmoney",
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xff081f5c),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                const Text(
+                  "UPmoney에 오신 것을 환영합니다.",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color.fromARGB(255, 169, 169, 169),
+                  ),
+                ),
+
+                const SizedBox(height: 45),
                 // 아이디 입력 필드
                 Align(
                   alignment: Alignment.center,
@@ -88,6 +112,8 @@ class _LoginPageState extends State<LoginPage> {
                       controller: idController,
                       decoration: const InputDecoration(
                         labelText: "아이디",
+                        filled: true,
+                        fillColor: Colors.white,
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -105,6 +131,8 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: true,
                       decoration: const InputDecoration(
                         labelText: "비밀번호",
+                        filled: true,
+                        fillColor: Colors.white,
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -129,20 +157,28 @@ class _LoginPageState extends State<LoginPage> {
 
                         login(id, password);
                       },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF081F5C),
+                        foregroundColor: Colors.white,
+                      ),
                       child: const Text(
                         "로그인",
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          ),
+                        
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 // 회원가입 버튼
                 Align(
                   alignment: Alignment.center,
                   child: SizedBox(
-                    width: 280,
-                    height: 50,
+                    width: 400,
+                    height: 40,
                     child: TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -152,9 +188,12 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         );
                       },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: const Color(0xFF081F5C),
+                      ),
                       child: const Text(
                         "회원가입하기",
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 20),
                       ),
                     ),
                   ),
