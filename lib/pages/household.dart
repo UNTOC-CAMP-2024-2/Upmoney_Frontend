@@ -171,12 +171,9 @@ class HouseholdPageState extends State<HouseholdPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          height: 20,
-                          child: Text('${date.day}',
+                          Text('${date.day}',
                           style: TextStyle(
                             fontSize: 14,
-                          ),
                           ),
                         ),
                         if (data != null) ...[
