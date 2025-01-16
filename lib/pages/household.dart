@@ -143,7 +143,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                       children: [
                         Text('${date.day}',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           color: Colors.blue,
                         ),
                         ),
@@ -171,10 +171,13 @@ class HouseholdPageState extends State<HouseholdPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('${date.day}',
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
+                        SizedBox(
+                          height: 20,
+                          child: Text('${date.day}',
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                          ),
                         ),
                         if (data != null) ...[
                           if (data['total_income'] != 0)
