@@ -127,11 +127,8 @@ class HouseholdPageState extends State<HouseholdPage> {
               tablePadding: const EdgeInsets.symmetric(vertical: 8.0),
               cellMargin: const EdgeInsets.all(15.0),
               todayDecoration: BoxDecoration(
-                color: Colors.transparent
-              ),
-              todayTextStyle: TextStyle(
-                color: Colors.blue,
-                fontWeight: FontWeight.bold
+                color: Color(0xFFD9EFFF),
+                shape: BoxShape.circle,
               ),
             ),
             calendarBuilders: CalendarBuilders(
@@ -147,6 +144,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                         Text('${date.day}',
                         style: TextStyle(
                           fontSize: 16,
+                          color: Colors.blue,
                         ),
                         ),
                         if (data != null) ...[
@@ -395,7 +393,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                           padding: EdgeInsets.all(10),
                           child: Stack(
                             children: [
-                              Padding(padding: EdgeInsetsDirectional.fromSTEB(50, 9, 0, 0),
+                              Padding(padding: EdgeInsetsDirectional.fromSTEB(50, 8, 0, 0),
                               child: Text(
                                 entry['description']!,
                                 style: TextStyle(
@@ -424,6 +422,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                                 child: Container(
                                   width: 14,
                                   height: 58,
+                                  padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     color: entry['category'] == '0' ? Color(0xFFFF5C5C) : Color(0xFF407BFF),
                                     borderRadius: BorderRadius.only(
@@ -569,18 +568,18 @@ class HouseholdPageState extends State<HouseholdPage> {
                           });
                         },
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 20),
                       if (_showButtons)
                         Expanded(
                           child: Container(
-                            width: 200,
+                            width: 600,
                             height: 40,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               itemCount: _buttonLabels.length,
                               itemBuilder: (context, index) {
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                   child: ElevatedButton(
                                     onPressed: () {
                                       if (_buttonLabels[index] == '식비') {
@@ -611,10 +610,14 @@ class HouseholdPageState extends State<HouseholdPage> {
                             ),
                           ),
                         ),
-                   Spacer(),
-                    const SizedBox(height: 16),
+                    ],
+                   ),
+                    const SizedBox(height: 5,),
+                    Row(
+                      children: [
+                        Spacer(),
                     Align(
-                      alignment: AlignmentDirectional(-1.0, 0),
+                      alignment: AlignmentDirectional(1.5, 0),
                       child: ElevatedButton(
                         onPressed:  () async {
                           final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption/${entry['id']}').replace(
@@ -652,8 +655,9 @@ class HouseholdPageState extends State<HouseholdPage> {
                           color: Colors.white,
                         )),
                     ),
+                    SizedBox(width: 15,),
                     Align(
-                      alignment: Alignment.centerRight,
+                      alignment: AlignmentDirectional(2.0, 0),
                       child: ElevatedButton(
                         onPressed: () async {
                           FocusScope.of(context).unfocus();
@@ -663,7 +667,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                               SnackBar(
                                 content: Text('인증 토큰이 없습니다. 다시 로그인하세요.'),
                                 backgroundColor: Colors.red,
-                              ),
+                              ),  
                             );
                             return;
                           }
@@ -752,9 +756,11 @@ class HouseholdPageState extends State<HouseholdPage> {
                         ),
                       ),
                     ),
+                      ],
+                    ),
                   ],
-                ),
-                ],
+                
+                
               ),
               ),
             );
