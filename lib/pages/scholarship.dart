@@ -75,14 +75,14 @@ class _HomePageState extends State<HomePage> {
   /// scholarship/1 데이터 가져오기
   Future<void> fetchScholarships1() async {
     await _fetchScholarshipsFromUrl(
-      'http://34.47.105.208:8000/scholarship/1?limit=15',
+      'http://127.0.0.1:8000/scholarship/1?limit=15',
     );
   }
 
   /// scholarship/2 데이터 가져오기
   Future<void> fetchScholarships2() async {
     await _fetchScholarshipsFromUrl(
-      'http://34.47.105.208:8000/scholarship/2?limit=15',
+      'http://127.0.0.1:8000/scholarship/2?limit=15',
     );
   }
 

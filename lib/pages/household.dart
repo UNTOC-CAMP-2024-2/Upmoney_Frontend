@@ -50,7 +50,7 @@ class HouseholdPageState extends State<HouseholdPage> {
   Future<void> _fetchAllData() async {
     final token = await getToken();
     
-    final url = Uri.parse('http://34.47.105.208:8000/dateconsumption/dateconsumption').replace(
+    final url = Uri.parse('http://127.0.0.1:8000/dateconsumption/dateconsumption').replace(
       queryParameters: {
         'token': token
       },
@@ -264,7 +264,7 @@ class HouseholdPageState extends State<HouseholdPage> {
   }
 
   final formattedDate = '${today.year.toString().padLeft(4, '0')}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
-  final url = Uri.parse('http://34.47.105.208:8000/dateconsumption/dateconsumption/$formattedDate').replace(
+  final url = Uri.parse('http://127.0.0.1:8000/dateconsumption/dateconsumption/$formattedDate').replace(
     queryParameters: {
       'token': token,
     },
@@ -620,7 +620,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                       alignment: AlignmentDirectional(1.5, 0),
                       child: ElevatedButton(
                         onPressed:  () async {
-                          final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption/${entry['id']}').replace(
+                          final url = Uri.parse('http://127.0.0.1:8000/consumption/consumption/${entry['id']}').replace(
                             queryParameters: {
                               'token': token,
                             },
@@ -681,7 +681,7 @@ class HouseholdPageState extends State<HouseholdPage> {
                             );
                             return;
                           }
-                          final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption/${entry['id']}').replace(
+                          final url = Uri.parse('http://127.0.0.1:8000/consumption/consumption/${entry['id']}').replace(
                             queryParameters: {
                               'token': token,
                             },

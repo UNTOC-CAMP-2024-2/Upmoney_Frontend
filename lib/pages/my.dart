@@ -40,7 +40,7 @@ void initState() {
       }
 
       // 2) 백엔드 /auth/userinfo 호출
-      final url = Uri.parse('http://34.47.105.208:8000/auth/userinfo').replace(
+      final url = Uri.parse('http://127.0.0.1:8000/auth/userinfo').replace(
         queryParameters: {
           'token':token,
         }
@@ -158,7 +158,7 @@ void initState() {
     });
 
     try {
-      final url = Uri.parse('http://34.47.105.208:8000/monetaryluck/random');
+      final url = Uri.parse('http://127.0.0.1:8000/monetaryluck/random');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -197,7 +197,7 @@ void initState() {
       }
 
       // 2) 로그아웃 API 호출
-      final url = Uri.parse('http://34.47.105.208:8000/auth/logout');
+      final url = Uri.parse('http://127.0.0.1:8000/auth/logout');
       final response = await http.post(
         url,
         headers: {

@@ -78,7 +78,7 @@ class PayPageState extends State<PayPage> {
       return;
     }
 
-    final url = Uri.parse('http://34.47.105.208:8000/averageconsumption/difference').replace(
+    final url = Uri.parse('http://127.0.0.1:8000/averageconsumption/difference').replace(
                             queryParameters: {
                               'token':token,
                               'classify_id': '$classifyId',
@@ -147,7 +147,7 @@ class PayPageState extends State<PayPage> {
      return;
     }
 
-    final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption/recent').replace(
+    final url = Uri.parse('http://127.0.0.1:8000/consumption/consumption/recent').replace(
                             queryParameters: {
                               'token':token,
                             },
@@ -190,7 +190,7 @@ class PayPageState extends State<PayPage> {
      return;
     }
 
-    final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption/most_recent_consumption').replace(
+    final url = Uri.parse('http://127.0.0.1:8000/consumption/consumption/most_recent_consumption').replace(
                             queryParameters: {
                               'token':token,
                             },
@@ -235,7 +235,7 @@ class PayPageState extends State<PayPage> {
      return;
     }
 
-    final url = Uri.parse('http://34.47.105.208:8000/auth/userinfo').replace(
+    final url = Uri.parse('http://127.0.0.1:8000/auth/userinfo').replace(
                             queryParameters: {
                               'token':token,
                             },

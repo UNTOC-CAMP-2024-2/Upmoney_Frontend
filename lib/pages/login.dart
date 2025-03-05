@@ -17,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
 
   Future<void> login(String id, String password) async {
-    final url = Uri.parse('http://34.47.105.208:8000/auth/login'); // 백엔드 URL로 변경
+    final url = Uri.parse('http://127.0.0.1:8000/auth/login'); // 백엔드 URL로 변경
     try {
       final response = await http.post(
         url,

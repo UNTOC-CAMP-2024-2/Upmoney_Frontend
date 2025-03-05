@@ -490,7 +490,7 @@ class _CustomDialogState extends State<CustomDialog> {
                             );
                             return;
                           }
-                          final url = Uri.parse('http://34.47.105.208:8000/consumption/consumption').replace(
+                          final url = Uri.parse('http://127.0.0.1:8000/consumption/consumption').replace(
                             queryParameters: {
                               'token':token,
                             },
